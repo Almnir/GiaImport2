@@ -17,5 +17,9 @@ namespace GiaImport2
             backgroundPanel.Dock = DockStyle.Fill;
             MainPanel.Controls.Add(backgroundPanel);
         }
+
+        private void ValidateXMLButton_ItemClick(object sender, DevExpress.XtraBars.ItemClickEventArgs e)
+        {
+        }
     }
 }
