@@ -30,13 +30,13 @@
         {
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MainForm));
             this.ribbonControl1 = new DevExpress.XtraBars.Ribbon.RibbonControl();
-            this.barButtonItem1 = new DevExpress.XtraBars.BarButtonItem();
+            this.OpenXMLFilesButton = new DevExpress.XtraBars.BarButtonItem();
             this.ValidateXMLButton = new DevExpress.XtraBars.BarButtonItem();
-            this.barButtonItem3 = new DevExpress.XtraBars.BarButtonItem();
-            this.barButtonItem7 = new DevExpress.XtraBars.BarButtonItem();
-            this.barButtonItem8 = new DevExpress.XtraBars.BarButtonItem();
-            this.barButtonItem10 = new DevExpress.XtraBars.BarButtonItem();
-            this.barButtonItem9 = new DevExpress.XtraBars.BarButtonItem();
+            this.ImportXMLFilesButton = new DevExpress.XtraBars.BarButtonItem();
+            this.ExportInterviewButton = new DevExpress.XtraBars.BarButtonItem();
+            this.ImportInterviewButton = new DevExpress.XtraBars.BarButtonItem();
+            this.FinishExamButton = new DevExpress.XtraBars.BarButtonItem();
+            this.SettingsButton = new DevExpress.XtraBars.BarButtonItem();
             this.ImportPage = new DevExpress.XtraBars.Ribbon.RibbonPage();
             this.ribbonPageGroup1 = new DevExpress.XtraBars.Ribbon.RibbonPageGroup();
             this.FinalInterviewPage = new DevExpress.XtraBars.Ribbon.RibbonPage();
@@ -59,13 +59,13 @@
             this.ribbonControl1.Items.AddRange(new DevExpress.XtraBars.BarItem[] {
             this.ribbonControl1.ExpandCollapseItem,
             this.ribbonControl1.SearchEditItem,
-            this.barButtonItem1,
+            this.OpenXMLFilesButton,
             this.ValidateXMLButton,
-            this.barButtonItem3,
-            this.barButtonItem7,
-            this.barButtonItem8,
-            this.barButtonItem10,
-            this.barButtonItem9});
+            this.ImportXMLFilesButton,
+            this.ExportInterviewButton,
+            this.ImportInterviewButton,
+            this.FinishExamButton,
+            this.SettingsButton});
             this.ribbonControl1.Location = new System.Drawing.Point(0, 0);
             this.ribbonControl1.MaxItemId = 19;
             this.ribbonControl1.Name = "ribbonControl1";
@@ -84,69 +84,71 @@
             this.ribbonControl1.Toolbar.ShowCustomizeItem = false;
             this.ribbonControl1.ToolbarLocation = DevExpress.XtraBars.Ribbon.RibbonQuickAccessToolbarLocation.Hidden;
             // 
-            // barButtonItem1
+            // OpenXMLFilesButton
             // 
-            this.barButtonItem1.Caption = "Открыть XML файлы";
-            this.barButtonItem1.Id = 11;
-            this.barButtonItem1.ImageOptions.Image = ((System.Drawing.Image)(resources.GetObject("barButtonItem1.ImageOptions.Image")));
-            this.barButtonItem1.ImageOptions.LargeImage = ((System.Drawing.Image)(resources.GetObject("barButtonItem1.ImageOptions.LargeImage")));
-            this.barButtonItem1.Name = "barButtonItem1";
-            this.barButtonItem1.RibbonStyle = DevExpress.XtraBars.Ribbon.RibbonItemStyles.Large;
+            this.OpenXMLFilesButton.Caption = "Открыть XML файлы";
+            this.OpenXMLFilesButton.Id = 11;
+            this.OpenXMLFilesButton.ImageOptions.Image = ((System.Drawing.Image)(resources.GetObject("OpenXMLFilesButton.ImageOptions.Image")));
+            this.OpenXMLFilesButton.ImageOptions.LargeImage = ((System.Drawing.Image)(resources.GetObject("OpenXMLFilesButton.ImageOptions.LargeImage")));
+            this.OpenXMLFilesButton.Name = "OpenXMLFilesButton";
+            this.OpenXMLFilesButton.RibbonStyle = DevExpress.XtraBars.Ribbon.RibbonItemStyles.Large;
+            this.OpenXMLFilesButton.ItemClick += new DevExpress.XtraBars.ItemClickEventHandler(this.OpenXMLFilesButton_ItemClick);
             // 
             // ValidateXMLButton
             // 
             this.ValidateXMLButton.Caption = "Проверить XML файлы";
             this.ValidateXMLButton.Id = 12;
-            this.ValidateXMLButton.ImageOptions.Image = ((System.Drawing.Image)(resources.GetObject("barButtonItem2.ImageOptions.Image")));
-            this.ValidateXMLButton.ImageOptions.LargeImage = ((System.Drawing.Image)(resources.GetObject("barButtonItem2.ImageOptions.LargeImage")));
+            this.ValidateXMLButton.ImageOptions.Image = ((System.Drawing.Image)(resources.GetObject("ValidateXMLButton.ImageOptions.Image")));
+            this.ValidateXMLButton.ImageOptions.LargeImage = ((System.Drawing.Image)(resources.GetObject("ValidateXMLButton.ImageOptions.LargeImage")));
             this.ValidateXMLButton.Name = "ValidateXMLButton";
             this.ValidateXMLButton.RibbonStyle = DevExpress.XtraBars.Ribbon.RibbonItemStyles.Large;
-            this.ValidateXMLButton.ItemClick += new DevExpress.XtraBars.ItemClickEventHandler(this.ValidateXMLButton_ItemClick);
             // 
-            // barButtonItem3
+            // ImportXMLFilesButton
             // 
-            this.barButtonItem3.Caption = "Загрузить XML файлы";
-            this.barButtonItem3.Id = 13;
-            this.barButtonItem3.ImageOptions.Image = ((System.Drawing.Image)(resources.GetObject("barButtonItem3.ImageOptions.Image")));
-            this.barButtonItem3.ImageOptions.LargeImage = ((System.Drawing.Image)(resources.GetObject("barButtonItem3.ImageOptions.LargeImage")));
-            this.barButtonItem3.Name = "barButtonItem3";
-            this.barButtonItem3.RibbonStyle = DevExpress.XtraBars.Ribbon.RibbonItemStyles.Large;
+            this.ImportXMLFilesButton.Caption = "Загрузить XML файлы";
+            this.ImportXMLFilesButton.Id = 13;
+            this.ImportXMLFilesButton.ImageOptions.Image = ((System.Drawing.Image)(resources.GetObject("ImportXMLFilesButton.ImageOptions.Image")));
+            this.ImportXMLFilesButton.ImageOptions.LargeImage = ((System.Drawing.Image)(resources.GetObject("ImportXMLFilesButton.ImageOptions.LargeImage")));
+            this.ImportXMLFilesButton.Name = "ImportXMLFilesButton";
+            this.ImportXMLFilesButton.RibbonStyle = DevExpress.XtraBars.Ribbon.RibbonItemStyles.Large;
             // 
-            // barButtonItem7
+            // ExportInterviewButton
             // 
-            this.barButtonItem7.Caption = "Выгрузить файлы ИС";
-            this.barButtonItem7.Id = 14;
-            this.barButtonItem7.ImageOptions.Image = ((System.Drawing.Image)(resources.GetObject("barButtonItem7.ImageOptions.Image")));
-            this.barButtonItem7.ImageOptions.LargeImage = ((System.Drawing.Image)(resources.GetObject("barButtonItem7.ImageOptions.LargeImage")));
-            this.barButtonItem7.Name = "barButtonItem7";
-            this.barButtonItem7.RibbonStyle = DevExpress.XtraBars.Ribbon.RibbonItemStyles.Large;
+            this.ExportInterviewButton.Caption = "Выгрузить файлы ИС";
+            this.ExportInterviewButton.Id = 14;
+            this.ExportInterviewButton.ImageOptions.Image = ((System.Drawing.Image)(resources.GetObject("ExportInterviewButton.ImageOptions.Image")));
+            this.ExportInterviewButton.ImageOptions.LargeImage = ((System.Drawing.Image)(resources.GetObject("ExportInterviewButton.ImageOptions.LargeImage")));
+            this.ExportInterviewButton.Name = "ExportInterviewButton";
+            this.ExportInterviewButton.RibbonStyle = DevExpress.XtraBars.Ribbon.RibbonItemStyles.Large;
+            this.ExportInterviewButton.ItemClick += new DevExpress.XtraBars.ItemClickEventHandler(this.ExportInterviewButton_ItemClick);
             // 
-            // barButtonItem8
+            // ImportInterviewButton
             // 
-            this.barButtonItem8.Caption = "Загрузить файлы ИС";
-            this.barButtonItem8.Id = 15;
-            this.barButtonItem8.ImageOptions.Image = ((System.Drawing.Image)(resources.GetObject("barButtonItem8.ImageOptions.Image")));
-            this.barButtonItem8.ImageOptions.LargeImage = ((System.Drawing.Image)(resources.GetObject("barButtonItem8.ImageOptions.LargeImage")));
-            this.barButtonItem8.Name = "barButtonItem8";
-            this.barButtonItem8.RibbonStyle = DevExpress.XtraBars.Ribbon.RibbonItemStyles.Large;
+            this.ImportInterviewButton.Caption = "Загрузить файлы ИС";
+            this.ImportInterviewButton.Id = 15;
+            this.ImportInterviewButton.ImageOptions.Image = ((System.Drawing.Image)(resources.GetObject("ImportInterviewButton.ImageOptions.Image")));
+            this.ImportInterviewButton.ImageOptions.LargeImage = ((System.Drawing.Image)(resources.GetObject("ImportInterviewButton.ImageOptions.LargeImage")));
+            this.ImportInterviewButton.Name = "ImportInterviewButton";
+            this.ImportInterviewButton.RibbonStyle = DevExpress.XtraBars.Ribbon.RibbonItemStyles.Large;
             // 
-            // barButtonItem10
+            // FinishExamButton
             // 
-            this.barButtonItem10.Caption = "Завершить экзамен";
-            this.barButtonItem10.Id = 16;
-            this.barButtonItem10.ImageOptions.Image = ((System.Drawing.Image)(resources.GetObject("barButtonItem10.ImageOptions.Image")));
-            this.barButtonItem10.ImageOptions.LargeImage = ((System.Drawing.Image)(resources.GetObject("barButtonItem10.ImageOptions.LargeImage")));
-            this.barButtonItem10.Name = "barButtonItem10";
-            this.barButtonItem10.RibbonStyle = DevExpress.XtraBars.Ribbon.RibbonItemStyles.Large;
+            this.FinishExamButton.Caption = "Завершить экзамен";
+            this.FinishExamButton.Id = 16;
+            this.FinishExamButton.ImageOptions.Image = ((System.Drawing.Image)(resources.GetObject("FinishExamButton.ImageOptions.Image")));
+            this.FinishExamButton.ImageOptions.LargeImage = ((System.Drawing.Image)(resources.GetObject("FinishExamButton.ImageOptions.LargeImage")));
+            this.FinishExamButton.Name = "FinishExamButton";
+            this.FinishExamButton.RibbonStyle = DevExpress.XtraBars.Ribbon.RibbonItemStyles.Large;
             // 
-            // barButtonItem9
+            // SettingsButton
             // 
-            this.barButtonItem9.Caption = "Настройки";
-            this.barButtonItem9.Id = 17;
-            this.barButtonItem9.ImageOptions.Image = ((System.Drawing.Image)(resources.GetObject("barButtonItem9.ImageOptions.Image")));
-            this.barButtonItem9.ImageOptions.LargeImage = ((System.Drawing.Image)(resources.GetObject("barButtonItem9.ImageOptions.LargeImage")));
-            this.barButtonItem9.Name = "barButtonItem9";
-            this.barButtonItem9.RibbonStyle = DevExpress.XtraBars.Ribbon.RibbonItemStyles.Large;
+            this.SettingsButton.Caption = "Настройки";
+            this.SettingsButton.Id = 17;
+            this.SettingsButton.ImageOptions.Image = ((System.Drawing.Image)(resources.GetObject("SettingsButton.ImageOptions.Image")));
+            this.SettingsButton.ImageOptions.LargeImage = ((System.Drawing.Image)(resources.GetObject("SettingsButton.ImageOptions.LargeImage")));
+            this.SettingsButton.Name = "SettingsButton";
+            this.SettingsButton.RibbonStyle = DevExpress.XtraBars.Ribbon.RibbonItemStyles.Large;
+            this.SettingsButton.ItemClick += new DevExpress.XtraBars.ItemClickEventHandler(this.SettingsButton_ItemClick);
             // 
             // ImportPage
             // 
@@ -158,9 +160,9 @@
             // ribbonPageGroup1
             // 
             this.ribbonPageGroup1.AllowTextClipping = false;
-            this.ribbonPageGroup1.ItemLinks.Add(this.barButtonItem1);
+            this.ribbonPageGroup1.ItemLinks.Add(this.OpenXMLFilesButton);
             this.ribbonPageGroup1.ItemLinks.Add(this.ValidateXMLButton);
-            this.ribbonPageGroup1.ItemLinks.Add(this.barButtonItem3);
+            this.ribbonPageGroup1.ItemLinks.Add(this.ImportXMLFilesButton);
             this.ribbonPageGroup1.Name = "ribbonPageGroup1";
             this.ribbonPageGroup1.Text = "Импорт XML файлов";
             // 
@@ -173,9 +175,9 @@
             // 
             // ribbonPageGroup2
             // 
-            this.ribbonPageGroup2.ItemLinks.Add(this.barButtonItem7);
-            this.ribbonPageGroup2.ItemLinks.Add(this.barButtonItem8);
-            this.ribbonPageGroup2.ItemLinks.Add(this.barButtonItem10);
+            this.ribbonPageGroup2.ItemLinks.Add(this.ExportInterviewButton);
+            this.ribbonPageGroup2.ItemLinks.Add(this.ImportInterviewButton);
+            this.ribbonPageGroup2.ItemLinks.Add(this.FinishExamButton);
             this.ribbonPageGroup2.Name = "ribbonPageGroup2";
             this.ribbonPageGroup2.Text = "ribbonPageGroup2";
             // 
@@ -188,16 +190,16 @@
             // 
             // ribbonPageGroup3
             // 
-            this.ribbonPageGroup3.ItemLinks.Add(this.barButtonItem9);
+            this.ribbonPageGroup3.ItemLinks.Add(this.SettingsButton);
             this.ribbonPageGroup3.Name = "ribbonPageGroup3";
             this.ribbonPageGroup3.Text = "ribbonPageGroup3";
             // 
             // RibbonStatusBar
             // 
-            this.RibbonStatusBar.Location = new System.Drawing.Point(0, 393);
+            this.RibbonStatusBar.Location = new System.Drawing.Point(0, 391);
             this.RibbonStatusBar.Name = "RibbonStatusBar";
             this.RibbonStatusBar.Ribbon = this.ribbonControl1;
-            this.RibbonStatusBar.Size = new System.Drawing.Size(837, 28);
+            this.RibbonStatusBar.Size = new System.Drawing.Size(837, 30);
             // 
             // MainPanel
             // 
@@ -251,13 +253,13 @@
         private DevExpress.XtraBars.Ribbon.RibbonPageGroup ribbonPageGroup4;
         private DevExpress.XtraBars.Ribbon.RibbonPage SettingsPage;
         private DevExpress.XtraBars.Ribbon.RibbonPageGroup ribbonPageGroup3;
-        private DevExpress.XtraBars.BarButtonItem barButtonItem1;
+        private DevExpress.XtraBars.BarButtonItem OpenXMLFilesButton;
         private DevExpress.XtraBars.BarButtonItem ValidateXMLButton;
-        private DevExpress.XtraBars.BarButtonItem barButtonItem3;
-        private DevExpress.XtraBars.BarButtonItem barButtonItem7;
-        private DevExpress.XtraBars.BarButtonItem barButtonItem8;
-        private DevExpress.XtraBars.BarButtonItem barButtonItem10;
-        private DevExpress.XtraBars.BarButtonItem barButtonItem9;
+        private DevExpress.XtraBars.BarButtonItem ImportXMLFilesButton;
+        private DevExpress.XtraBars.BarButtonItem ExportInterviewButton;
+        private DevExpress.XtraBars.BarButtonItem ImportInterviewButton;
+        private DevExpress.XtraBars.BarButtonItem FinishExamButton;
+        private DevExpress.XtraBars.BarButtonItem SettingsButton;
     }
 }
 

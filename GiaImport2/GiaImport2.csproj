@@ -9,8 +9,9 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>GiaImport2</RootNamespace>
     <AssemblyName>GiaImport2</AssemblyName>
-    <TargetFrameworkVersion>v4.7.1</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
+    <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <PlatformTarget>AnyCPU</PlatformTarget>
@@ -46,6 +47,10 @@
     <Reference Include="DevExpress.XtraGrid.v21.2, Version=21.2.5.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a, processorArchitecture=MSIL" />
     <Reference Include="DevExpress.XtraLayout.v21.2, Version=21.2.5.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a, processorArchitecture=MSIL" />
     <Reference Include="DevExpress.XtraPrinting.v21.2, Version=21.2.5.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a" />
+    <Reference Include="DevExpress.XtraWizard.v21.2, Version=21.2.5.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a, processorArchitecture=MSIL" />
+    <Reference Include="SimpleInjector">
+      <HintPath>..\..\..\..\Projects\m_use\Libraries\SimpleInjector.5.3.3\SimpleInjector.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
@@ -64,6 +69,21 @@
     <Compile Include="BackgroundPanel.Designer.cs">
       <DependentUpon>BackgroundPanel.cs</DependentUpon>
     </Compile>
+    <Compile Include="ExportInterviewWizard.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="ExportInterviewWizard.Designer.cs">
+      <DependentUpon>ExportInterviewWizard.cs</DependentUpon>
+    </Compile>
+    <Compile Include="FormSettings.cs" />
+    <Compile Include="FormsHelper.cs" />
+    <Compile Include="GiaImportSplashScreen.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="GiaImportSplashScreen.Designer.cs">
+      <DependentUpon>GiaImportSplashScreen.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Globals.cs" />
     <Compile Include="ImportGridPanel.cs">
       <SubType>UserControl</SubType>
     </Compile>
@@ -78,8 +98,26 @@
     </Compile>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Services\IGlobals.cs" />
+    <Compile Include="Services\ICommonRepository.cs" />
+    <Compile Include="Services\CommonRepository.cs" />
+    <Compile Include="SettingsWindow.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="SettingsWindow.Designer.cs">
+      <DependentUpon>SettingsWindow.cs</DependentUpon>
+    </Compile>
     <EmbeddedResource Include="BackgroundPanel.resx">
       <DependentUpon>BackgroundPanel.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ExportInterviewWizard.resx">
+      <DependentUpon>ExportInterviewWizard.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ExportInterviewWizard.ru-RU.resx">
+      <DependentUpon>ExportInterviewWizard.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="GiaImportSplashScreen.resx">
+      <DependentUpon>GiaImportSplashScreen.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="ImportGridPanel.resx">
       <DependentUpon>ImportGridPanel.cs</DependentUpon>
@@ -99,6 +137,9 @@
       <DependentUpon>Resources.resx</DependentUpon>
       <DesignTime>True</DesignTime>
     </Compile>
+    <EmbeddedResource Include="SettingsWindow.resx">
+      <DependentUpon>SettingsWindow.cs</DependentUpon>
+    </EmbeddedResource>
     <None Include="App.config" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
@@ -113,6 +154,12 @@
   <ItemGroup>
     <Content Include="Resources\document_import.ico" />
     <None Include="Resources\Логотип-ФЦТ-горизонт-02 300.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\..\Projects\m_use\Projects\MFtcSfl\MFtcSfl.csproj">
+      <Project>{8a051c2e-1889-490b-b5ff-e155052ad220}</Project>
+      <Name>MFtcSfl</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it.
