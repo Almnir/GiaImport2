@@ -29,15 +29,16 @@ namespace GiaImport2
         /// </summary>
         private void InitializeComponent()
         {
+            this.splashScreenManager1 = new DevExpress.XtraSplashScreen.SplashScreenManager(this, typeof(global::GiaImport2.GiaImportWaitForm), true, true, true);
             this.wizardControl1 = new DevExpress.XtraWizard.WizardControl();
             this.welcomeWizardPage1 = new DevExpress.XtraWizard.WelcomeWizardPage();
             this.labelControl3 = new DevExpress.XtraEditors.LabelControl();
             this.radioGroup1 = new DevExpress.XtraEditors.RadioGroup();
             this.ExportFolderButton = new DevExpress.XtraEditors.SimpleButton();
-            this.textEdit1 = new DevExpress.XtraEditors.TextEdit();
+            this.ExportPathEdit = new DevExpress.XtraEditors.TextEdit();
             this.labelControl2 = new DevExpress.XtraEditors.LabelControl();
-            this.comboBoxEdit1 = new DevExpress.XtraEditors.ComboBoxEdit();
             this.labelControl1 = new DevExpress.XtraEditors.LabelControl();
+            this.ExamDatesCombo = new DevExpress.XtraEditors.ComboBoxEdit();
             this.wizardPage1 = new DevExpress.XtraWizard.WizardPage();
             this.checkedListBoxControl1 = new DevExpress.XtraEditors.CheckedListBoxControl();
             this.completionWizardPage1 = new DevExpress.XtraWizard.CompletionWizardPage();
@@ -45,11 +46,15 @@ namespace GiaImport2
             this.wizardControl1.SuspendLayout();
             this.welcomeWizardPage1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.radioGroup1.Properties)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.textEdit1.Properties)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.comboBoxEdit1.Properties)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.ExportPathEdit.Properties)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.ExamDatesCombo.Properties)).BeginInit();
             this.wizardPage1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.checkedListBoxControl1)).BeginInit();
             this.SuspendLayout();
+            // 
+            // splashScreenManager1
+            // 
+            this.splashScreenManager1.ClosingDelay = 500;
             // 
             // wizardControl1
             // 
@@ -66,7 +71,6 @@ namespace GiaImport2
             this.welcomeWizardPage1,
             this.wizardPage1,
             this.completionWizardPage1});
-            this.wizardControl1.PreviousText = "< &Назад";
             this.wizardControl1.Size = new System.Drawing.Size(663, 379);
             this.wizardControl1.Text = "Параметры экспорта";
             this.wizardControl1.SelectedPageChanged += new DevExpress.XtraWizard.WizardPageChangedEventHandler(this.wizardControl1_SelectedPageChanged);
@@ -77,10 +81,10 @@ namespace GiaImport2
             this.welcomeWizardPage1.Controls.Add(this.labelControl3);
             this.welcomeWizardPage1.Controls.Add(this.radioGroup1);
             this.welcomeWizardPage1.Controls.Add(this.ExportFolderButton);
-            this.welcomeWizardPage1.Controls.Add(this.textEdit1);
+            this.welcomeWizardPage1.Controls.Add(this.ExportPathEdit);
             this.welcomeWizardPage1.Controls.Add(this.labelControl2);
-            this.welcomeWizardPage1.Controls.Add(this.comboBoxEdit1);
             this.welcomeWizardPage1.Controls.Add(this.labelControl1);
+            this.welcomeWizardPage1.Controls.Add(this.ExamDatesCombo);
             this.welcomeWizardPage1.IntroductionText = "";
             this.welcomeWizardPage1.Name = "welcomeWizardPage1";
             this.welcomeWizardPage1.ProceedText = "Нажмите \'Вперёд\' чтобы продолжить...";
@@ -116,12 +120,12 @@ namespace GiaImport2
             this.ExportFolderButton.TabIndex = 4;
             this.ExportFolderButton.Text = "Выбрать";
             // 
-            // textEdit1
+            // ExportPathEdit
             // 
-            this.textEdit1.Location = new System.Drawing.Point(4, 84);
-            this.textEdit1.Name = "textEdit1";
-            this.textEdit1.Size = new System.Drawing.Size(354, 20);
-            this.textEdit1.TabIndex = 3;
+            this.ExportPathEdit.Location = new System.Drawing.Point(4, 84);
+            this.ExportPathEdit.Name = "ExportPathEdit";
+            this.ExportPathEdit.Size = new System.Drawing.Size(354, 20);
+            this.ExportPathEdit.TabIndex = 3;
             // 
             // labelControl2
             // 
@@ -131,15 +135,6 @@ namespace GiaImport2
             this.labelControl2.TabIndex = 2;
             this.labelControl2.Text = "Путь к выгрузке:";
             // 
-            // comboBoxEdit1
-            // 
-            this.comboBoxEdit1.Location = new System.Drawing.Point(4, 24);
-            this.comboBoxEdit1.Name = "comboBoxEdit1";
-            this.comboBoxEdit1.Properties.Buttons.AddRange(new DevExpress.XtraEditors.Controls.EditorButton[] {
-            new DevExpress.XtraEditors.Controls.EditorButton(DevExpress.XtraEditors.Controls.ButtonPredefines.Combo)});
-            this.comboBoxEdit1.Size = new System.Drawing.Size(160, 20);
-            this.comboBoxEdit1.TabIndex = 1;
-            // 
             // labelControl1
             // 
             this.labelControl1.Location = new System.Drawing.Point(4, 4);
@@ -147,6 +142,20 @@ namespace GiaImport2
             this.labelControl1.Size = new System.Drawing.Size(79, 13);
             this.labelControl1.TabIndex = 0;
             this.labelControl1.Text = "Дата экзамена:";
+            // 
+            // ExamDatesCombo
+            // 
+            this.ExamDatesCombo.Location = new System.Drawing.Point(4, 24);
+            this.ExamDatesCombo.Name = "ExamDatesCombo";
+            this.ExamDatesCombo.Properties.AdvancedModeOptions.SelectionColor = System.Drawing.SystemColors.ActiveCaption;
+            this.ExamDatesCombo.Properties.Buttons.AddRange(new DevExpress.XtraEditors.Controls.EditorButton[] {
+            new DevExpress.XtraEditors.Controls.EditorButton(DevExpress.XtraEditors.Controls.ButtonPredefines.Combo)});
+            this.ExamDatesCombo.Properties.LookAndFeel.SkinName = "Office 2013 Light Gray";
+            this.ExamDatesCombo.Properties.LookAndFeel.UseDefaultLookAndFeel = false;
+            this.ExamDatesCombo.Properties.Sorted = true;
+            this.ExamDatesCombo.Properties.TextEditStyle = DevExpress.XtraEditors.Controls.TextEditStyles.DisableTextEditor;
+            this.ExamDatesCombo.Size = new System.Drawing.Size(112, 20);
+            this.ExamDatesCombo.TabIndex = 1;
             // 
             // wizardPage1
             // 
@@ -191,8 +200,8 @@ namespace GiaImport2
             this.welcomeWizardPage1.ResumeLayout(false);
             this.welcomeWizardPage1.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.radioGroup1.Properties)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.textEdit1.Properties)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.comboBoxEdit1.Properties)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.ExportPathEdit.Properties)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.ExamDatesCombo.Properties)).EndInit();
             this.wizardPage1.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.checkedListBoxControl1)).EndInit();
             this.ResumeLayout(false);
@@ -208,10 +217,11 @@ namespace GiaImport2
         private DevExpress.XtraEditors.LabelControl labelControl3;
         private DevExpress.XtraEditors.RadioGroup radioGroup1;
         private DevExpress.XtraEditors.SimpleButton ExportFolderButton;
-        private DevExpress.XtraEditors.TextEdit textEdit1;
+        private DevExpress.XtraEditors.TextEdit ExportPathEdit;
         private DevExpress.XtraEditors.LabelControl labelControl2;
-        private DevExpress.XtraEditors.ComboBoxEdit comboBoxEdit1;
         private DevExpress.XtraEditors.LabelControl labelControl1;
         private DevExpress.XtraEditors.CheckedListBoxControl checkedListBoxControl1;
+        private DevExpress.XtraEditors.ComboBoxEdit ExamDatesCombo;
+        DevExpress.XtraSplashScreen.SplashScreenManager splashScreenManager1;
     }
 }

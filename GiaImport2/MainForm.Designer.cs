@@ -29,6 +29,7 @@
         private void InitializeComponent()
         {
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MainForm));
+            DevExpress.XtraSplashScreen.SplashScreenManager splashScreenManager1 = new DevExpress.XtraSplashScreen.SplashScreenManager(this, null, true, true);
             this.ribbonControl1 = new DevExpress.XtraBars.Ribbon.RibbonControl();
             this.OpenXMLFilesButton = new DevExpress.XtraBars.BarButtonItem();
             this.ValidateXMLButton = new DevExpress.XtraBars.BarButtonItem();
@@ -196,10 +197,10 @@
             // 
             // RibbonStatusBar
             // 
-            this.RibbonStatusBar.Location = new System.Drawing.Point(0, 391);
+            this.RibbonStatusBar.Location = new System.Drawing.Point(0, 393);
             this.RibbonStatusBar.Name = "RibbonStatusBar";
             this.RibbonStatusBar.Ribbon = this.ribbonControl1;
-            this.RibbonStatusBar.Size = new System.Drawing.Size(837, 30);
+            this.RibbonStatusBar.Size = new System.Drawing.Size(837, 28);
             // 
             // MainPanel
             // 
@@ -218,6 +219,10 @@
             // ribbonPageGroup4
             // 
             this.ribbonPageGroup4.Name = "ribbonPageGroup4";
+            // 
+            // splashScreenManager1
+            // 
+            splashScreenManager1.ClosingDelay = 500;
             // 
             // MainForm
             // 

@@ -7,15 +7,13 @@ namespace GiaImport2
 {
     public partial class MainForm : DevExpress.XtraEditors.XtraForm
     {
-        ICommonRepository CommonRepository;
         private readonly Container DIContainer;
 
-        public MainForm(ICommonRepository commonRepository, Container container)
+        public MainForm(Container container)
         {
             InitializeComponent();
             DevExpress.Skins.SkinManager.EnableFormSkins();
-            this.CommonRepository = commonRepository;
-            DIContainer = container;
+            this.DIContainer = container;
         }
 
         private void MainForm_Load(object sender, EventArgs e)
@@ -27,6 +25,11 @@ namespace GiaImport2
 
         private void ExportInterviewButton_ItemClick(object sender, DevExpress.XtraBars.ItemClickEventArgs e)
         {
+            if (DatabaseHelper.CheckConnection() == false)
+            {
+                FormsHelper.ShowStyledMessageBox("Внимание!", "Нет соединения с БД!");
+                return;
+            }
             var exportInterviewWizard = DIContainer.GetInstance<ExportInterviewWizard>();
             exportInterviewWizard.Show();
         }
@@ -40,7 +43,7 @@ namespace GiaImport2
 
         private void OpenXMLFilesButton_ItemClick(object sender, DevExpress.XtraBars.ItemClickEventArgs e)
         {
-            FormsHelper.ShowStyledMessageBox("fff", CommonRepository.GetCurrentScheme().Version);
+            //FormsHelper.ShowStyledMessageBox("fff", CommonRepository.GetCurrentScheme().Version);
         }
     }
 }
