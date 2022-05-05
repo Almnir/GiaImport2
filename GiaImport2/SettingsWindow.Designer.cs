@@ -31,10 +31,10 @@ namespace GiaImport2
         {
             this.groupControl1 = new DevExpress.XtraEditors.GroupControl();
             this.CheckConnectionButton = new DevExpress.XtraEditors.SimpleButton();
-            this.textEdit4 = new DevExpress.XtraEditors.TextEdit();
-            this.textEdit3 = new DevExpress.XtraEditors.TextEdit();
-            this.textEdit2 = new DevExpress.XtraEditors.TextEdit();
-            this.textEdit1 = new DevExpress.XtraEditors.TextEdit();
+            this.PasswordText = new DevExpress.XtraEditors.TextEdit();
+            this.LoginText = new DevExpress.XtraEditors.TextEdit();
+            this.DatabaseText = new DevExpress.XtraEditors.TextEdit();
+            this.ServerText = new DevExpress.XtraEditors.TextEdit();
             this.labelControl4 = new DevExpress.XtraEditors.LabelControl();
             this.labelControl3 = new DevExpress.XtraEditors.LabelControl();
             this.labelControl2 = new DevExpress.XtraEditors.LabelControl();
@@ -44,20 +44,20 @@ namespace GiaImport2
             this.CancelSettingsButton = new DevExpress.XtraEditors.SimpleButton();
             ((System.ComponentModel.ISupportInitialize)(this.groupControl1)).BeginInit();
             this.groupControl1.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.textEdit4.Properties)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.textEdit3.Properties)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.textEdit2.Properties)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.textEdit1.Properties)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.PasswordText.Properties)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.LoginText.Properties)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.DatabaseText.Properties)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.ServerText.Properties)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.groupControl2)).BeginInit();
             this.SuspendLayout();
             // 
             // groupControl1
             // 
             this.groupControl1.Controls.Add(this.CheckConnectionButton);
-            this.groupControl1.Controls.Add(this.textEdit4);
-            this.groupControl1.Controls.Add(this.textEdit3);
-            this.groupControl1.Controls.Add(this.textEdit2);
-            this.groupControl1.Controls.Add(this.textEdit1);
+            this.groupControl1.Controls.Add(this.PasswordText);
+            this.groupControl1.Controls.Add(this.LoginText);
+            this.groupControl1.Controls.Add(this.DatabaseText);
+            this.groupControl1.Controls.Add(this.ServerText);
             this.groupControl1.Controls.Add(this.labelControl4);
             this.groupControl1.Controls.Add(this.labelControl3);
             this.groupControl1.Controls.Add(this.labelControl2);
@@ -77,33 +77,37 @@ namespace GiaImport2
             this.CheckConnectionButton.Text = "Проверить соединение";
             this.CheckConnectionButton.Click += new System.EventHandler(this.CheckConnectionButton_Click);
             // 
-            // textEdit4
+            // PasswordText
             // 
-            this.textEdit4.Location = new System.Drawing.Point(77, 105);
-            this.textEdit4.Name = "textEdit4";
-            this.textEdit4.Size = new System.Drawing.Size(488, 20);
-            this.textEdit4.TabIndex = 7;
+            this.PasswordText.Location = new System.Drawing.Point(77, 105);
+            this.PasswordText.Name = "PasswordText";
+            this.PasswordText.Properties.LookAndFeel.SkinName = "Office 2013 Light Gray";
+            this.PasswordText.Properties.LookAndFeel.UseDefaultLookAndFeel = false;
+            this.PasswordText.Properties.PasswordChar = '*';
+            this.PasswordText.Properties.UseSystemPasswordChar = true;
+            this.PasswordText.Size = new System.Drawing.Size(488, 20);
+            this.PasswordText.TabIndex = 7;
             // 
-            // textEdit3
+            // LoginText
             // 
-            this.textEdit3.Location = new System.Drawing.Point(77, 79);
-            this.textEdit3.Name = "textEdit3";
-            this.textEdit3.Size = new System.Drawing.Size(488, 20);
-            this.textEdit3.TabIndex = 6;
+            this.LoginText.Location = new System.Drawing.Point(77, 79);
+            this.LoginText.Name = "LoginText";
+            this.LoginText.Size = new System.Drawing.Size(488, 20);
+            this.LoginText.TabIndex = 6;
             // 
-            // textEdit2
+            // DatabaseText
             // 
-            this.textEdit2.Location = new System.Drawing.Point(77, 53);
-            this.textEdit2.Name = "textEdit2";
-            this.textEdit2.Size = new System.Drawing.Size(488, 20);
-            this.textEdit2.TabIndex = 5;
+            this.DatabaseText.Location = new System.Drawing.Point(77, 53);
+            this.DatabaseText.Name = "DatabaseText";
+            this.DatabaseText.Size = new System.Drawing.Size(488, 20);
+            this.DatabaseText.TabIndex = 5;
             // 
-            // textEdit1
+            // ServerText
             // 
-            this.textEdit1.Location = new System.Drawing.Point(77, 27);
-            this.textEdit1.Name = "textEdit1";
-            this.textEdit1.Size = new System.Drawing.Size(488, 20);
-            this.textEdit1.TabIndex = 4;
+            this.ServerText.Location = new System.Drawing.Point(77, 27);
+            this.ServerText.Name = "ServerText";
+            this.ServerText.Size = new System.Drawing.Size(488, 20);
+            this.ServerText.TabIndex = 4;
             // 
             // labelControl4
             // 
@@ -152,6 +156,7 @@ namespace GiaImport2
             this.OkButton.Size = new System.Drawing.Size(75, 23);
             this.OkButton.TabIndex = 2;
             this.OkButton.Text = "Применить";
+            this.OkButton.Click += new System.EventHandler(this.OkButton_Click);
             // 
             // CancelSettingsButton
             // 
@@ -175,13 +180,14 @@ namespace GiaImport2
             this.LookAndFeel.UseDefaultLookAndFeel = false;
             this.Name = "SettingsWindow";
             this.Text = "Настройки";
+            this.Load += new System.EventHandler(this.SettingsWindow_Load);
             ((System.ComponentModel.ISupportInitialize)(this.groupControl1)).EndInit();
             this.groupControl1.ResumeLayout(false);
             this.groupControl1.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.textEdit4.Properties)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.textEdit3.Properties)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.textEdit2.Properties)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.textEdit1.Properties)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.PasswordText.Properties)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.LoginText.Properties)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.DatabaseText.Properties)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.ServerText.Properties)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.groupControl2)).EndInit();
             this.ResumeLayout(false);
 
@@ -194,10 +200,10 @@ namespace GiaImport2
         private DevExpress.XtraEditors.SimpleButton OkButton;
         private DevExpress.XtraEditors.SimpleButton CancelSettingsButton;
         private DevExpress.XtraEditors.SimpleButton CheckConnectionButton;
-        private DevExpress.XtraEditors.TextEdit textEdit4;
-        private DevExpress.XtraEditors.TextEdit textEdit3;
-        private DevExpress.XtraEditors.TextEdit textEdit2;
-        private DevExpress.XtraEditors.TextEdit textEdit1;
+        private DevExpress.XtraEditors.TextEdit PasswordText;
+        private DevExpress.XtraEditors.TextEdit LoginText;
+        private DevExpress.XtraEditors.TextEdit DatabaseText;
+        private DevExpress.XtraEditors.TextEdit ServerText;
         private DevExpress.XtraEditors.LabelControl labelControl4;
         private DevExpress.XtraEditors.LabelControl labelControl3;
         private DevExpress.XtraEditors.LabelControl labelControl2;

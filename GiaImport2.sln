@@ -1,19 +1,19 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 16
-VisualStudioVersion = 16.0.32228.343
+# Visual Studio Version 17
+VisualStudioVersion = 17.1.32407.343
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GiaImport2", "GiaImport2\GiaImport2.csproj", "{35DCE802-230D-413F-973A-E28EE21768B3}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MFtcSfl", "..\..\..\Projects\m_use\Projects\MFtcSfl\MFtcSfl.csproj", "{8A051C2E-1889-490B-B5FF-E155052AD220}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MFtcSfl", "..\m_use\Projects\MFtcSfl\MFtcSfl.csproj", "{8A051C2E-1889-490B-B5FF-E155052AD220}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MFtcPck", "..\..\..\Projects\m_use\Projects\MFtcPck\MFtcPck.csproj", "{D45324F7-3FC1-431F-9F71-D814994EC005}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MFtcPck", "..\m_use\Projects\MFtcPck\MFtcPck.csproj", "{D45324F7-3FC1-431F-9F71-D814994EC005}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MFtcConfig", "..\..\..\Projects\m_use\Projects\MFtcConfig\MFtcConfig.csproj", "{CD6CE5BE-C050-4A71-B833-DBDFDDF1D0FD}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MFtcConfig", "..\m_use\Projects\MFtcConfig\MFtcConfig.csproj", "{CD6CE5BE-C050-4A71-B833-DBDFDDF1D0FD}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MFtcEfe", "..\..\..\Projects\m_use\Projects\MFtcEfe\MFtcEfe.csproj", "{65C5264D-6DCF-43E2-B5C2-2C6BC1DE511E}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MFtcEfe", "..\m_use\Projects\MFtcEfe\MFtcEfe.csproj", "{65C5264D-6DCF-43E2-B5C2-2C6BC1DE511E}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MFtcUtils", "..\..\..\Projects\m_use\Projects\MFtcUtils\MFtcUtils.csproj", "{25846A90-F39A-4C9C-A2E8-F66C9ABD16B6}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MFtcUtils", "..\m_use\Projects\MFtcUtils\MFtcUtils.csproj", "{25846A90-F39A-4C9C-A2E8-F66C9ABD16B6}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -279,8 +279,8 @@ Global
 		{D45324F7-3FC1-431F-9F71-D814994EC005}.Debug (USE Federal)|x86.Build.0 = Debug - ResultsProcessor|x86
 		{D45324F7-3FC1-431F-9F71-D814994EC005}.Debug (USE Regional)|Any CPU.ActiveCfg = Debug - ResultsProcessor|Any CPU
 		{D45324F7-3FC1-431F-9F71-D814994EC005}.Debug (USE Regional)|Any CPU.Build.0 = Debug - ResultsProcessor|Any CPU
-		{D45324F7-3FC1-431F-9F71-D814994EC005}.Debug (USE Regional)|x86.ActiveCfg = Debug - ResultsProcessor|x86
-		{D45324F7-3FC1-431F-9F71-D814994EC005}.Debug (USE Regional)|x86.Build.0 = Debug - ResultsProcessor|x86
+		{D45324F7-3FC1-431F-9F71-D814994EC005}.Debug (USE Regional)|x86.ActiveCfg = Debug Gia9Regional|x86
+		{D45324F7-3FC1-431F-9F71-D814994EC005}.Debug (USE Regional)|x86.Build.0 = Debug Gia9Regional|x86
 		{D45324F7-3FC1-431F-9F71-D814994EC005}.Debug Gia9Regional|Any CPU.ActiveCfg = Debug Gia9Regional|Any CPU
 		{D45324F7-3FC1-431F-9F71-D814994EC005}.Debug Gia9Regional|Any CPU.Build.0 = Debug Gia9Regional|Any CPU
 		{D45324F7-3FC1-431F-9F71-D814994EC005}.Debug Gia9Regional|x86.ActiveCfg = Debug Gia9Regional|x86
@@ -371,8 +371,8 @@ Global
 		{CD6CE5BE-C050-4A71-B833-DBDFDDF1D0FD}.Debug (USE Federal)|x86.Build.0 = Debug (USE Federal)|x86
 		{CD6CE5BE-C050-4A71-B833-DBDFDDF1D0FD}.Debug (USE Regional)|Any CPU.ActiveCfg = Debug (USE Regional)|Any CPU
 		{CD6CE5BE-C050-4A71-B833-DBDFDDF1D0FD}.Debug (USE Regional)|Any CPU.Build.0 = Debug (USE Regional)|Any CPU
-		{CD6CE5BE-C050-4A71-B833-DBDFDDF1D0FD}.Debug (USE Regional)|x86.ActiveCfg = Debug (USE Regional)|x86
-		{CD6CE5BE-C050-4A71-B833-DBDFDDF1D0FD}.Debug (USE Regional)|x86.Build.0 = Debug (USE Regional)|x86
+		{CD6CE5BE-C050-4A71-B833-DBDFDDF1D0FD}.Debug (USE Regional)|x86.ActiveCfg = Debug|Any CPU
+		{CD6CE5BE-C050-4A71-B833-DBDFDDF1D0FD}.Debug (USE Regional)|x86.Build.0 = Debug|Any CPU
 		{CD6CE5BE-C050-4A71-B833-DBDFDDF1D0FD}.Debug Gia9Regional|Any CPU.ActiveCfg = Debug (TUSE Regional)|Any CPU
 		{CD6CE5BE-C050-4A71-B833-DBDFDDF1D0FD}.Debug Gia9Regional|Any CPU.Build.0 = Debug (TUSE Regional)|Any CPU
 		{CD6CE5BE-C050-4A71-B833-DBDFDDF1D0FD}.Debug Gia9Regional|x86.ActiveCfg = Debug (TUSE Regional)|x86

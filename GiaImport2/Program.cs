@@ -54,10 +54,12 @@ namespace GiaImport2
             var container = new Container();
 
             // Register your types, for instance:
-            container.Register<ICommonRepository, CommonRepository>(Lifestyle.Transient);
+            //container.Register<ICommonRepository, CommonRepository>(Lifestyle.Singleton);
+            container.Register<IInterviewRepository, InterviewRepository>(Lifestyle.Transient);
 
             AutoRegisterWindowsForms(container);
 
+            container.Options.ResolveUnregisteredConcreteTypes = true;
             container.Verify();
 
             return container;
