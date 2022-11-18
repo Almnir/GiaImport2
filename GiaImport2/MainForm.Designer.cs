@@ -29,7 +29,7 @@
         private void InitializeComponent()
         {
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MainForm));
-            DevExpress.XtraSplashScreen.SplashScreenManager splashScreenManager1 = new DevExpress.XtraSplashScreen.SplashScreenManager(this, null, true, true);
+            this.splashScreenManager1 = new DevExpress.XtraSplashScreen.SplashScreenManager(this, typeof(global::GiaImport2.GiaImportWaitForm), true, true);
             this.ribbonControl1 = new DevExpress.XtraBars.Ribbon.RibbonControl();
             this.OpenXMLFilesButton = new DevExpress.XtraBars.BarButtonItem();
             this.ValidateXMLButton = new DevExpress.XtraBars.BarButtonItem();
@@ -38,6 +38,8 @@
             this.ImportInterviewButton = new DevExpress.XtraBars.BarButtonItem();
             this.FinishExamButton = new DevExpress.XtraBars.BarButtonItem();
             this.SettingsButton = new DevExpress.XtraBars.BarButtonItem();
+            this.barStaticItem1 = new DevExpress.XtraBars.BarStaticItem();
+            this.barButtonItem1 = new DevExpress.XtraBars.BarButtonItem();
             this.ImportPage = new DevExpress.XtraBars.Ribbon.RibbonPage();
             this.ribbonPageGroup1 = new DevExpress.XtraBars.Ribbon.RibbonPageGroup();
             this.FinalInterviewPage = new DevExpress.XtraBars.Ribbon.RibbonPage();
@@ -51,6 +53,10 @@
             ((System.ComponentModel.ISupportInitialize)(this.ribbonControl1)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.MainPanel)).BeginInit();
             this.SuspendLayout();
+            // 
+            // splashScreenManager1
+            // 
+            this.splashScreenManager1.ClosingDelay = 500;
             // 
             // ribbonControl1
             // 
@@ -66,9 +72,11 @@
             this.ExportInterviewButton,
             this.ImportInterviewButton,
             this.FinishExamButton,
-            this.SettingsButton});
+            this.SettingsButton,
+            this.barStaticItem1,
+            this.barButtonItem1});
             this.ribbonControl1.Location = new System.Drawing.Point(0, 0);
-            this.ribbonControl1.MaxItemId = 19;
+            this.ribbonControl1.MaxItemId = 24;
             this.ribbonControl1.Name = "ribbonControl1";
             this.ribbonControl1.Pages.AddRange(new DevExpress.XtraBars.Ribbon.RibbonPage[] {
             this.ImportPage,
@@ -131,6 +139,7 @@
             this.ImportInterviewButton.ImageOptions.LargeImage = ((System.Drawing.Image)(resources.GetObject("ImportInterviewButton.ImageOptions.LargeImage")));
             this.ImportInterviewButton.Name = "ImportInterviewButton";
             this.ImportInterviewButton.RibbonStyle = DevExpress.XtraBars.Ribbon.RibbonItemStyles.Large;
+            this.ImportInterviewButton.ItemClick += new DevExpress.XtraBars.ItemClickEventHandler(this.ImportInterviewButton_ItemClick);
             // 
             // FinishExamButton
             // 
@@ -150,6 +159,18 @@
             this.SettingsButton.Name = "SettingsButton";
             this.SettingsButton.RibbonStyle = DevExpress.XtraBars.Ribbon.RibbonItemStyles.Large;
             this.SettingsButton.ItemClick += new DevExpress.XtraBars.ItemClickEventHandler(this.SettingsButton_ItemClick);
+            // 
+            // barStaticItem1
+            // 
+            this.barStaticItem1.Caption = "barStaticItem1";
+            this.barStaticItem1.Id = 19;
+            this.barStaticItem1.Name = "barStaticItem1";
+            // 
+            // barButtonItem1
+            // 
+            this.barButtonItem1.Caption = "barButtonItem1";
+            this.barButtonItem1.Id = 20;
+            this.barButtonItem1.Name = "barButtonItem1";
             // 
             // ImportPage
             // 
@@ -197,6 +218,7 @@
             // 
             // RibbonStatusBar
             // 
+            this.RibbonStatusBar.ItemLinks.Add(this.barStaticItem1, true);
             this.RibbonStatusBar.Location = new System.Drawing.Point(0, 393);
             this.RibbonStatusBar.Name = "RibbonStatusBar";
             this.RibbonStatusBar.Ribbon = this.ribbonControl1;
@@ -219,10 +241,6 @@
             // ribbonPageGroup4
             // 
             this.ribbonPageGroup4.Name = "ribbonPageGroup4";
-            // 
-            // splashScreenManager1
-            // 
-            splashScreenManager1.ClosingDelay = 500;
             // 
             // MainForm
             // 
@@ -265,6 +283,9 @@
         private DevExpress.XtraBars.BarButtonItem ImportInterviewButton;
         private DevExpress.XtraBars.BarButtonItem FinishExamButton;
         private DevExpress.XtraBars.BarButtonItem SettingsButton;
+        private DevExpress.XtraSplashScreen.SplashScreenManager splashScreenManager1;
+        private DevExpress.XtraBars.BarStaticItem barStaticItem1;
+        private DevExpress.XtraBars.BarButtonItem barButtonItem1;
     }
 }
 

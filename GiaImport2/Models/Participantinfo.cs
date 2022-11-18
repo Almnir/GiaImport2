@@ -1,7 +1,7 @@
 ﻿using GiaImport2.Enumerations;
 using System;
 
-namespace GiaImport.Models
+namespace GiaImport2.Models
 {
     public class Participantinfo
     {

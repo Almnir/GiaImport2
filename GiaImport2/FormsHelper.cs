@@ -1,4 +1,6 @@
 ﻿using DevExpress.LookAndFeel;
+using DevExpress.XtraBars.Ribbon;
+using DevExpress.XtraBars;
 using DevExpress.XtraEditors;
 using DevExpress.XtraGrid;
 using DevExpress.XtraGrid.Views.Grid;
@@ -92,6 +94,32 @@ namespace GiaImport2
                 trySearchingAgainBounds = new Rectangle(new Point(x, y), size);
                 e.Appearance.DrawString(e.Cache, trySearchingAgainText, trySearchingAgainBounds, linkBrush);
             };
+        }
+        public static void ToggleRibbonButtonsAll(RibbonControl ribbonControl, bool enableButtons)
+        {
+            foreach (RibbonPage page in ribbonControl.Pages)
+            {
+                foreach (RibbonPageGroup group in page.Groups)
+                {
+                    ToggleRibbonPageGroupItems(group, enableButtons);
+                }
+            }
+        }
+
+
+        public static void ToggleRibbonPageGroupItems(RibbonPageGroup pageGroup, bool enableButtons)
+        {
+            foreach (BarItemLink link in pageGroup.ItemLinks)
+            {
+                link.Item.Enabled = enableButtons;
+                BarButtonGroup group = link.Item as BarButtonGroup;
+                if (group != null) ToggleRibbonButtonGroupItems(group, enableButtons);
+            }
+        }
+        static void ToggleRibbonButtonGroupItems(BarButtonGroup buttonGroup, bool enableButtons)
+        {
+            foreach (BarItemLink subLink in buttonGroup.ItemLinks)
+                subLink.Item.Enabled = enableButtons;
         }
     }
 }

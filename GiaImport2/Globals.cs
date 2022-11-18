@@ -23,23 +23,6 @@ namespace GiaImport2
         {
             return string.Format("Server={0};Database={1};User Id={2};Password={3};Application Name=GiaImport v.{4}", serverText, databaseText, loginText, passwordText, Properties.Settings.Default.Version);
         }
-        public static string GetConnection()
-        {
-            var cred = GetCredentials();
-            if (cred.Item1 == null) return null;
-            return string.Format("Server={0};Database={1};User Id={2};Password={3};Application Name=GiaImport v.{4}", cred.Item3, cred.Item4, cred.Item1, cred.Item2, Properties.Settings.Default.Version);
-        }
-        public static (string, string, string, string) GetCredentials()
-        {
-            // чтение реквизитов для входа в GiaImport
-            var cred = CredentialManager.GetICredential(Globals.TARGET_CREDENTIAL);
-            if (cred == null) return new Tuple<string, string, string, string>("", "", "", "").ToValueTuple();
-                // почему-то имя пользователя сохраняется как target\\имя, удаляем ненужное
-                var username = cred.UserName.Replace(Globals.TARGET_CREDENTIAL + "\\", "");
-                var server = (SettingsAttributes)cred.Attributes["ServerAttribute"];
-                var database = (SettingsAttributes)cred.Attributes["DatabaseAttribute"];
-            return new Tuple<string,string,string,string>(username, cred.CredentialBlob, server.value,database.value).ToValueTuple();
-        }
 
         public const string GRID_NAME = "Таблица";
         public const string GRID_DESCRIPTION = "Описание";

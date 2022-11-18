@@ -8,6 +8,7 @@ namespace GiaImport2.Models
         public string GovernmentName { get; set; }
         public Guid SchoolID { get; set; }
         public int SchoolCode { get; set; }
+        public string ShortName { get; set; }
         public Guid ParticipantID { get; set; }
         public string pClass { get; set; }
         public string Surname { get; set; }

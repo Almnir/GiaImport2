@@ -33,23 +33,24 @@ namespace GiaImport2
             this.wizardControl1 = new DevExpress.XtraWizard.WizardControl();
             this.welcomeWizardPage1 = new DevExpress.XtraWizard.WelcomeWizardPage();
             this.labelControl3 = new DevExpress.XtraEditors.LabelControl();
-            this.radioGroup1 = new DevExpress.XtraEditors.RadioGroup();
+            this.PartitionGroup = new DevExpress.XtraEditors.RadioGroup();
             this.ExportFolderButton = new DevExpress.XtraEditors.SimpleButton();
             this.ExportPathEdit = new DevExpress.XtraEditors.TextEdit();
             this.labelControl2 = new DevExpress.XtraEditors.LabelControl();
             this.labelControl1 = new DevExpress.XtraEditors.LabelControl();
             this.ExamDatesCombo = new DevExpress.XtraEditors.ComboBoxEdit();
-            this.wizardPage1 = new DevExpress.XtraWizard.WizardPage();
-            this.checkedListBoxControl1 = new DevExpress.XtraEditors.CheckedListBoxControl();
+            this.processWizardPage = new DevExpress.XtraWizard.WizardPage();
             this.completionWizardPage1 = new DevExpress.XtraWizard.CompletionWizardPage();
+            this.InfoGrid = new DevExpress.XtraEditors.ListBoxControl();
+            this.labelControl4 = new DevExpress.XtraEditors.LabelControl();
             ((System.ComponentModel.ISupportInitialize)(this.wizardControl1)).BeginInit();
             this.wizardControl1.SuspendLayout();
             this.welcomeWizardPage1.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.radioGroup1.Properties)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.PartitionGroup.Properties)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.ExportPathEdit.Properties)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.ExamDatesCombo.Properties)).BeginInit();
-            this.wizardPage1.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.checkedListBoxControl1)).BeginInit();
+            this.completionWizardPage1.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.InfoGrid)).BeginInit();
             this.SuspendLayout();
             // 
             // splashScreenManager1
@@ -60,7 +61,7 @@ namespace GiaImport2
             // 
             this.wizardControl1.CancelText = "Отменить";
             this.wizardControl1.Controls.Add(this.welcomeWizardPage1);
-            this.wizardControl1.Controls.Add(this.wizardPage1);
+            this.wizardControl1.Controls.Add(this.processWizardPage);
             this.wizardControl1.Controls.Add(this.completionWizardPage1);
             this.wizardControl1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.wizardControl1.LookAndFeel.SkinName = "Office 2013 Light Gray";
@@ -69,17 +70,18 @@ namespace GiaImport2
             this.wizardControl1.NextText = "&Вперёд >";
             this.wizardControl1.Pages.AddRange(new DevExpress.XtraWizard.BaseWizardPage[] {
             this.welcomeWizardPage1,
-            this.wizardPage1,
+            this.processWizardPage,
             this.completionWizardPage1});
             this.wizardControl1.Size = new System.Drawing.Size(663, 379);
             this.wizardControl1.Text = "Параметры экспорта";
+            this.wizardControl1.UseAcceptButton = false;
             this.wizardControl1.SelectedPageChanged += new DevExpress.XtraWizard.WizardPageChangedEventHandler(this.wizardControl1_SelectedPageChanged);
             this.wizardControl1.CancelClick += new System.ComponentModel.CancelEventHandler(this.wizardControl1_CancelClick);
             // 
             // welcomeWizardPage1
             // 
             this.welcomeWizardPage1.Controls.Add(this.labelControl3);
-            this.welcomeWizardPage1.Controls.Add(this.radioGroup1);
+            this.welcomeWizardPage1.Controls.Add(this.PartitionGroup);
             this.welcomeWizardPage1.Controls.Add(this.ExportFolderButton);
             this.welcomeWizardPage1.Controls.Add(this.ExportPathEdit);
             this.welcomeWizardPage1.Controls.Add(this.labelControl2);
@@ -99,18 +101,18 @@ namespace GiaImport2
             this.labelControl3.TabIndex = 6;
             this.labelControl3.Text = "Разделение:";
             // 
-            // radioGroup1
+            // PartitionGroup
             // 
-            this.radioGroup1.Location = new System.Drawing.Point(3, 141);
-            this.radioGroup1.Name = "radioGroup1";
-            this.radioGroup1.Properties.GlyphAlignment = DevExpress.Utils.HorzAlignment.Default;
-            this.radioGroup1.Properties.Items.AddRange(new DevExpress.XtraEditors.Controls.RadioGroupItem[] {
+            this.PartitionGroup.Location = new System.Drawing.Point(3, 141);
+            this.PartitionGroup.Name = "PartitionGroup";
+            this.PartitionGroup.Properties.GlyphAlignment = DevExpress.Utils.HorzAlignment.Default;
+            this.PartitionGroup.Properties.Items.AddRange(new DevExpress.XtraEditors.Controls.RadioGroupItem[] {
             new DevExpress.XtraEditors.Controls.RadioGroupItem(null, "По школам", true, null, "SchoolsRadioButton"),
             new DevExpress.XtraEditors.Controls.RadioGroupItem(null, "По классам", true, null, "ClassesRadioButton")});
-            this.radioGroup1.Properties.LookAndFeel.SkinName = "Office 2013 Light Gray";
-            this.radioGroup1.Properties.LookAndFeel.UseDefaultLookAndFeel = false;
-            this.radioGroup1.Size = new System.Drawing.Size(171, 79);
-            this.radioGroup1.TabIndex = 5;
+            this.PartitionGroup.Properties.LookAndFeel.SkinName = "Office 2013 Light Gray";
+            this.PartitionGroup.Properties.LookAndFeel.UseDefaultLookAndFeel = false;
+            this.PartitionGroup.Size = new System.Drawing.Size(171, 79);
+            this.PartitionGroup.TabIndex = 5;
             // 
             // ExportFolderButton
             // 
@@ -119,6 +121,7 @@ namespace GiaImport2
             this.ExportFolderButton.Size = new System.Drawing.Size(79, 23);
             this.ExportFolderButton.TabIndex = 4;
             this.ExportFolderButton.Text = "Выбрать";
+            this.ExportFolderButton.Click += new System.EventHandler(this.ExportFolderButton_Click);
             // 
             // ExportPathEdit
             // 
@@ -157,29 +160,37 @@ namespace GiaImport2
             this.ExamDatesCombo.Size = new System.Drawing.Size(112, 20);
             this.ExamDatesCombo.TabIndex = 1;
             // 
-            // wizardPage1
+            // processWizardPage
             // 
-            this.wizardPage1.Controls.Add(this.checkedListBoxControl1);
-            this.wizardPage1.DescriptionText = "Выберите элементы разделения";
-            this.wizardPage1.Name = "wizardPage1";
-            this.wizardPage1.Size = new System.Drawing.Size(631, 236);
-            this.wizardPage1.Text = "Экспорт файлов ИС";
-            // 
-            // checkedListBoxControl1
-            // 
-            this.checkedListBoxControl1.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.checkedListBoxControl1.Location = new System.Drawing.Point(0, 0);
-            this.checkedListBoxControl1.Name = "checkedListBoxControl1";
-            this.checkedListBoxControl1.Size = new System.Drawing.Size(631, 236);
-            this.checkedListBoxControl1.TabIndex = 0;
+            this.processWizardPage.DescriptionText = "Выберите элементы разделения";
+            this.processWizardPage.Name = "processWizardPage";
+            this.processWizardPage.Size = new System.Drawing.Size(631, 236);
+            this.processWizardPage.Text = "Экспорт файлов ИС";
             // 
             // completionWizardPage1
             // 
+            this.completionWizardPage1.Controls.Add(this.InfoGrid);
+            this.completionWizardPage1.Controls.Add(this.labelControl4);
             this.completionWizardPage1.FinishText = "";
             this.completionWizardPage1.Name = "completionWizardPage1";
-            this.completionWizardPage1.ProceedText = "Нажмите \'Завершить\' для начала выгрузки...";
+            this.completionWizardPage1.ProceedText = "Нажмите \'Финиш\' для завершения выбора и начала выгрузки...";
             this.completionWizardPage1.Size = new System.Drawing.Size(446, 247);
             this.completionWizardPage1.Text = "Завершение выбора параметров выгрузки";
+            // 
+            // InfoGrid
+            // 
+            this.InfoGrid.Location = new System.Drawing.Point(4, 24);
+            this.InfoGrid.Name = "InfoGrid";
+            this.InfoGrid.Size = new System.Drawing.Size(439, 204);
+            this.InfoGrid.TabIndex = 1;
+            // 
+            // labelControl4
+            // 
+            this.labelControl4.Location = new System.Drawing.Point(4, 4);
+            this.labelControl4.Name = "labelControl4";
+            this.labelControl4.Size = new System.Drawing.Size(125, 13);
+            this.labelControl4.TabIndex = 0;
+            this.labelControl4.Text = "Выбранные разделения:";
             // 
             // ExportInterviewWizard
             // 
@@ -199,11 +210,12 @@ namespace GiaImport2
             this.wizardControl1.ResumeLayout(false);
             this.welcomeWizardPage1.ResumeLayout(false);
             this.welcomeWizardPage1.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.radioGroup1.Properties)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.PartitionGroup.Properties)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.ExportPathEdit.Properties)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.ExamDatesCombo.Properties)).EndInit();
-            this.wizardPage1.ResumeLayout(false);
-            ((System.ComponentModel.ISupportInitialize)(this.checkedListBoxControl1)).EndInit();
+            this.completionWizardPage1.ResumeLayout(false);
+            this.completionWizardPage1.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.InfoGrid)).EndInit();
             this.ResumeLayout(false);
 
         }
@@ -212,16 +224,17 @@ namespace GiaImport2
 
         private DevExpress.XtraWizard.WizardControl wizardControl1;
         private DevExpress.XtraWizard.WelcomeWizardPage welcomeWizardPage1;
-        private DevExpress.XtraWizard.WizardPage wizardPage1;
+        private DevExpress.XtraWizard.WizardPage processWizardPage;
         private DevExpress.XtraWizard.CompletionWizardPage completionWizardPage1;
         private DevExpress.XtraEditors.LabelControl labelControl3;
-        private DevExpress.XtraEditors.RadioGroup radioGroup1;
+        private DevExpress.XtraEditors.RadioGroup PartitionGroup;
         private DevExpress.XtraEditors.SimpleButton ExportFolderButton;
         private DevExpress.XtraEditors.TextEdit ExportPathEdit;
         private DevExpress.XtraEditors.LabelControl labelControl2;
         private DevExpress.XtraEditors.LabelControl labelControl1;
-        private DevExpress.XtraEditors.CheckedListBoxControl checkedListBoxControl1;
         private DevExpress.XtraEditors.ComboBoxEdit ExamDatesCombo;
         DevExpress.XtraSplashScreen.SplashScreenManager splashScreenManager1;
+        private DevExpress.XtraEditors.LabelControl labelControl4;
+        private DevExpress.XtraEditors.ListBoxControl InfoGrid;
     }
 }

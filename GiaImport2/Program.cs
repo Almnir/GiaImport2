@@ -5,6 +5,8 @@ using GiaImport2.Services;
 using SimpleInjector;
 using SimpleInjector.Diagnostics;
 using System;
+using System.Globalization;
+using System.Linq;
 using System.Threading;
 using System.Windows.Forms;
 
@@ -30,6 +32,12 @@ namespace GiaImport2
 
                     var container = Bootstrap();
 
+                    CultureInfo culture = CultureInfo.CreateSpecificCulture("ru-RU");
+                    Thread.CurrentThread.CurrentUICulture = culture;
+                    Thread.CurrentThread.CurrentCulture = culture;
+                    CultureInfo.DefaultThreadCurrentCulture = culture;
+                    CultureInfo.DefaultThreadCurrentUICulture = culture;
+
                     Application.Run(container.GetInstance<MainForm>());
                     //Application.Run(new MainForm());
                 }
@@ -48,13 +56,14 @@ namespace GiaImport2
             }
         }
 
+
         private static Container Bootstrap()
         {
             // Create the container as usual.
             var container = new Container();
 
             // Register your types, for instance:
-            //container.Register<ICommonRepository, CommonRepository>(Lifestyle.Singleton);
+            container.Register<ICommonRepository, CommonRepository>(Lifestyle.Singleton);
             container.Register<IInterviewRepository, InterviewRepository>(Lifestyle.Transient);
 
             AutoRegisterWindowsForms(container);

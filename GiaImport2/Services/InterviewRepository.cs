@@ -1,26 +1,30 @@
 ﻿using Dapper;
-using GiaImport.Models;
 using GiaImport2.Enumerations;
 using GiaImport2.Models;
-using NLog;
 using System;
 using System.Collections.Generic;
 using System.Data.SqlClient;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace GiaImport2.Services
 {
     public class InterviewRepository : IInterviewRepository
     {
-        Logger Logger = NLog.LogManager.GetCurrentClassLogger();
+        private readonly ICommonRepository CommonRepository;
+        //Logger Logger = NLog.LogManager.GetCurrentClassLogger();
+
+        public InterviewRepository(ICommonRepository commonRepository)
+        {
+            this.CommonRepository = commonRepository;
+        }
+
         public async Task<IEnumerable<string>> GetExamDates()
         {
             IEnumerable<string> examDates = null;
             try
             {
-                using (SqlConnection sqlConnection = new SqlConnection(Globals.GetConnection()))
+                using (SqlConnection sqlConnection = new SqlConnection(CommonRepository.GetConnection()))
                 {
                     sqlConnection.Open();
                     examDates = await sqlConnection.QueryAsync<string>(@"select ExamDate from dat_Exams where TestTypeCode = 9 and SubjectCode = 20");
@@ -30,7 +34,7 @@ namespace GiaImport2.Services
             {
                 string status = string.Format("При выполнении запроса к базе данных произошла ошибка: {0}", ex.ToString());
                 //log.Error(status);
-                Logger.Error(status);
+                CommonRepository.GetLogger().Error(status);
             }
             finally
             {
@@ -44,7 +48,7 @@ namespace GiaImport2.Services
             List<Governmentinfo> result = new List<Governmentinfo>();
             try
             {
-                using (SqlConnection sqlConnection = new SqlConnection(Globals.GetConnection()))
+                using (SqlConnection sqlConnection = new SqlConnection(CommonRepository.GetConnection()))
                 {
                     sqlConnection.Open();
                     var participantsExamsQuery = await sqlConnection.QueryAsync<Models.ParticipantsExamsModel>(
@@ -53,10 +57,11 @@ namespace GiaImport2.Services
                                                                         g.GovernmentName,
                                                                         s.SchoolID,
                                                                         s.SchoolCode,
+                                                                        s.ShortName,
                                                                         p.ParticipantID,
                                                                         p.pClass,
                                                                         p.Surname,
-                                                                        p.Name,
+                                                                        p.[Name],
                                                                         p.SecondName,
                                                                         p.DocumentSeries,
                                                                         p.DocumentNumber,
@@ -87,8 +92,8 @@ namespace GiaImport2.Services
                     var loaderSheets = await sqlConnection.QueryAsync<Models.SheetsModel>(
                         @"select ParticipantID, SheetID, Barcode, Reserve01, PackageFK
                              from loader.sht_sheets_R
-                             where TestTypeCode == 9 and
-                                   SubjectCode == 20 and
+                             where TestTypeCode = 9 and
+                                   SubjectCode = 20 and
                                    ExamDate = @ExamDate", new { @ExamDate = examDate });
 
                     foreach (var item in participantsExamsQuery)
@@ -148,6 +153,7 @@ namespace GiaImport2.Services
                                 item.SchoolID,
                                 item.SchoolCode,
                                 "ОО №" + item.SchoolCode.ToString(),
+                                item.ShortName,
                                 new List<Participantinfo>() { participantinfo }
                                 );
                             governmentInfo.Schools.Add(schoolinfo);

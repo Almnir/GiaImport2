@@ -45,21 +45,75 @@
     <Reference Include="Dapper, Version=2.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\Dapper.2.0.123\lib\net461\Dapper.dll</HintPath>
     </Reference>
-    <Reference Include="DevExpress.BonusSkins.v21.2" />
-    <Reference Include="DevExpress.Data.Desktop.v21.2" />
-    <Reference Include="DevExpress.Data.v21.2" />
-    <Reference Include="DevExpress.Utils.v21.2" />
-    <Reference Include="DevExpress.Sparkline.v21.2.Core" />
-    <Reference Include="DevExpress.XtraBars.v21.2, Version=21.2.5.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a, processorArchitecture=MSIL" />
-    <Reference Include="DevExpress.XtraEditors.v21.2" />
-    <Reference Include="DevExpress.Printing.v21.2.Core" />
-    <Reference Include="DevExpress.XtraGrid.v21.2, Version=21.2.5.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a, processorArchitecture=MSIL" />
-    <Reference Include="DevExpress.XtraLayout.v21.2, Version=21.2.5.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a, processorArchitecture=MSIL" />
-    <Reference Include="DevExpress.XtraPrinting.v21.2, Version=21.2.5.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a" />
-    <Reference Include="DevExpress.XtraWizard.v21.2, Version=21.2.5.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a, processorArchitecture=MSIL" />
+    <Reference Include="DevExpress.BonusSkins.v21.2, Version=21.2.4.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\..\Projects\m_use\Libraries\DevExpress\21.2\DevExpress.BonusSkins.v21.2.dll</HintPath>
+    </Reference>
+    <Reference Include="DevExpress.Data.Desktop.v21.2, Version=21.2.4.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\..\Projects\m_use\Libraries\DevExpress\21.2\DevExpress.Data.Desktop.v21.2.dll</HintPath>
+    </Reference>
+    <Reference Include="DevExpress.Data.v21.2, Version=21.2.4.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\..\Projects\m_use\Libraries\DevExpress\21.2\DevExpress.Data.v21.2.dll</HintPath>
+    </Reference>
+    <Reference Include="DevExpress.Images.v21.2, Version=21.2.4.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a" />
+    <Reference Include="DevExpress.Office.v21.2.Core, Version=21.2.4.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a" />
+    <Reference Include="DevExpress.Pdf.v21.2.Core, Version=21.2.4.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a" />
+    <Reference Include="DevExpress.Printing.v21.2.Core, Version=21.2.4.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\..\Projects\m_use\Libraries\DevExpress\21.2\DevExpress.Printing.v21.2.Core.dll</HintPath>
+    </Reference>
+    <Reference Include="DevExpress.RichEdit.v21.2.Core, Version=21.2.4.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a" />
+    <Reference Include="DevExpress.Sparkline.v21.2.Core, Version=21.2.4.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\..\Projects\m_use\Libraries\DevExpress\21.2\DevExpress.Sparkline.v21.2.Core.dll</HintPath>
+    </Reference>
+    <Reference Include="DevExpress.Utils.v21.2, Version=21.2.4.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\..\Projects\m_use\Libraries\DevExpress\21.2\DevExpress.Utils.v21.2.dll</HintPath>
+    </Reference>
+    <Reference Include="DevExpress.XtraBars.v21.2, Version=21.2.4.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\..\Projects\m_use\Libraries\DevExpress\21.2\DevExpress.XtraBars.v21.2.dll</HintPath>
+    </Reference>
+    <Reference Include="DevExpress.XtraDialogs.v21.2, Version=21.2.4.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\..\Projects\m_use\Libraries\DevExpress\21.2\DevExpress.XtraDialogs.v21.2.dll</HintPath>
+    </Reference>
+    <Reference Include="DevExpress.XtraEditors.v21.2, Version=21.2.4.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\..\Projects\m_use\Libraries\DevExpress\21.2\DevExpress.XtraEditors.v21.2.dll</HintPath>
+    </Reference>
+    <Reference Include="DevExpress.XtraGrid.v21.2, Version=21.2.4.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\..\Projects\m_use\Libraries\DevExpress\21.2\DevExpress.XtraGrid.v21.2.dll</HintPath>
+    </Reference>
+    <Reference Include="DevExpress.XtraLayout.v21.2, Version=21.2.4.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\..\Projects\m_use\Libraries\DevExpress\21.2\DevExpress.XtraLayout.v21.2.dll</HintPath>
+    </Reference>
+    <Reference Include="DevExpress.XtraPrinting.v21.2, Version=21.2.4.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\..\Projects\m_use\Libraries\DevExpress\21.2\DevExpress.XtraPrinting.v21.2.dll</HintPath>
+    </Reference>
+    <Reference Include="DevExpress.XtraRichEdit.v21.2, Version=21.2.4.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a, processorArchitecture=MSIL" />
+    <Reference Include="DevExpress.XtraTreeList.v21.2, Version=21.2.4.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a, processorArchitecture=MSIL" />
+    <Reference Include="DevExpress.XtraWizard.v21.2, Version=21.2.4.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\..\Projects\m_use\Libraries\DevExpress\21.2\DevExpress.XtraWizard.v21.2.dll</HintPath>
+    </Reference>
+    <Reference Include="linq2db">
+      <HintPath>..\..\..\..\Projects\m_use\Libraries\Linq2db\linq2db.2.6.4\net46\linq2db.dll</HintPath>
+    </Reference>
+    <Reference Include="Newtonsoft.Json, Version=13.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\..\Projects\m_use\Libraries\JSON\Newtonsoft.Json.dll</HintPath>
+    </Reference>
     <Reference Include="NLog, Version=4.0.0.0, Culture=neutral, PublicKeyToken=5120e14c03d0593c, processorArchitecture=MSIL">
       <HintPath>..\packages\NLog.4.7.15\lib\net45\NLog.dll</HintPath>
     </Reference>
+    <Reference Include="PresentationCore" />
     <Reference Include="SimpleInjector, Version=5.0.0.0, Culture=neutral, PublicKeyToken=984cb50dea722e99, processorArchitecture=MSIL">
       <HintPath>..\packages\SimpleInjector.5.3.3\lib\net461\SimpleInjector.dll</HintPath>
     </Reference>
@@ -75,10 +129,12 @@
       <Private>True</Private>
       <Private>True</Private>
     </Reference>
+    <Reference Include="System.Data.Linq" />
     <Reference Include="System.Data.SqlClient, Version=4.1.1.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
       <HintPath>..\packages\System.Data.SqlClient.4.3.0\lib\net46\System.Data.SqlClient.dll</HintPath>
     </Reference>
     <Reference Include="System.IO.Compression" />
+    <Reference Include="System.Runtime.Remoting" />
     <Reference Include="System.Runtime.Serialization" />
     <Reference Include="System.ServiceModel" />
     <Reference Include="System.Transactions" />
@@ -93,6 +149,8 @@
     <Reference Include="TableDependency.SqlClient, Version=8.5.8.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\SqlTableDependency.8.5.8\lib\net451\TableDependency.SqlClient.dll</HintPath>
     </Reference>
+    <Reference Include="UIAutomationClient" />
+    <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="BackgroundPanel.cs">
@@ -101,14 +159,25 @@
     <Compile Include="BackgroundPanel.Designer.cs">
       <DependentUpon>BackgroundPanel.cs</DependentUpon>
     </Compile>
-    <Compile Include="DatabaseHelper.cs" />
+    <Compile Include="BarcodeGenerator.cs" />
+    <Compile Include="CurrentUserSecurity.cs" />
+    <Compile Include="DataModels\DateTimeException.cs" />
+    <Compile Include="DataModels\gia.generated.cs" />
     <Compile Include="Enumerations\FileStatus.cs" />
+    <Compile Include="Enumerations\SchoolOrClassChoice.cs" />
+    <Compile Include="ExportInterviewPanel.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="ExportInterviewPanel.Designer.cs">
+      <DependentUpon>ExportInterviewPanel.cs</DependentUpon>
+    </Compile>
     <Compile Include="ExportInterviewWizard.cs">
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="ExportInterviewWizard.Designer.cs">
       <DependentUpon>ExportInterviewWizard.cs</DependentUpon>
     </Compile>
+    <Compile Include="FilesInfo.cs" />
     <Compile Include="FormSettings.cs" />
     <Compile Include="FormsHelper.cs" />
     <Compile Include="GiaImportSplashScreen.cs">
@@ -130,17 +199,61 @@
     <Compile Include="MainForm.Designer.cs">
       <DependentUpon>MainForm.cs</DependentUpon>
     </Compile>
+    <Compile Include="Models\CacheData.cs" />
+    <Compile Include="Models\ExportInterviewDto.cs" />
     <Compile Include="Models\Governmentinfo.cs" />
     <Compile Include="Models\Participantinfo.cs" />
     <Compile Include="Models\ParticipantsExamsModel.cs" />
+    <Compile Include="Models\PClassObject.cs" />
+    <Compile Include="Models\SchoolClasses.cs" />
     <Compile Include="Models\Schoolinfo.cs" />
     <Compile Include="Models\SheetsModel.cs" />
+    <Compile Include="PreCheckControl.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="PreCheckControl.Designer.cs">
+      <DependentUpon>PreCheckControl.cs</DependentUpon>
+    </Compile>
     <Compile Include="Program.cs" />
+    <Compile Include="ProgressBarWindow.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="ProgressBarWindow.Designer.cs">
+      <DependentUpon>ProgressBarWindow.cs</DependentUpon>
+    </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="ResultForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="ResultForm.Designer.cs">
+      <DependentUpon>ResultForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="ResultStatisticsControl.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="ResultStatisticsControl.Designer.cs">
+      <DependentUpon>ResultStatisticsControl.cs</DependentUpon>
+    </Compile>
+    <Compile Include="SchoolsClassesPanel.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="SchoolsClassesPanel.Designer.cs">
+      <DependentUpon>SchoolsClassesPanel.cs</DependentUpon>
+    </Compile>
+    <Compile Include="SchoolsPanel.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="SchoolsPanel.Designer.cs">
+      <DependentUpon>SchoolsPanel.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Services\BulkManager.cs" />
+    <Compile Include="Services\ExportFinalInterviewService.cs" />
+    <Compile Include="Enumerations\FilesInfoStats.cs" />
     <Compile Include="Services\IGlobals.cs" />
     <Compile Include="Services\ICommonRepository.cs" />
     <Compile Include="Services\CommonRepository.cs" />
     <Compile Include="Services\IInterviewRepository.cs" />
+    <Compile Include="Services\ImportFinalInterviewService.cs" />
     <Compile Include="Services\InterviewRepository.cs" />
     <Compile Include="SettingsWindow.cs">
       <SubType>Form</SubType>
@@ -154,8 +267,13 @@
     <Compile Include="GiaImportWaitForm.Designer.cs">
       <DependentUpon>GiaImportWaitForm.cs</DependentUpon>
     </Compile>
+    <Compile Include="StringExtension.cs" />
+    <Compile Include="Models\TableInfo.cs" />
     <EmbeddedResource Include="BackgroundPanel.resx">
       <DependentUpon>BackgroundPanel.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ExportInterviewPanel.resx">
+      <DependentUpon>ExportInterviewPanel.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="ExportInterviewWizard.resx">
       <DependentUpon>ExportInterviewWizard.cs</DependentUpon>
@@ -173,6 +291,12 @@
       <DependentUpon>MainForm.cs</DependentUpon>
       <SubType>Designer</SubType>
     </EmbeddedResource>
+    <EmbeddedResource Include="PreCheckControl.resx">
+      <DependentUpon>PreCheckControl.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ProgressBarWindow.resx">
+      <DependentUpon>ProgressBarWindow.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Properties\licenses.licx" />
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
@@ -184,6 +308,18 @@
       <DependentUpon>Resources.resx</DependentUpon>
       <DesignTime>True</DesignTime>
     </Compile>
+    <EmbeddedResource Include="ResultForm.resx">
+      <DependentUpon>ResultForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ResultStatisticsControl.resx">
+      <DependentUpon>ResultStatisticsControl.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="SchoolsClassesPanel.resx">
+      <DependentUpon>SchoolsClassesPanel.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="SchoolsPanel.resx">
+      <DependentUpon>SchoolsPanel.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="SettingsWindow.resx">
       <DependentUpon>SettingsWindow.cs</DependentUpon>
     </EmbeddedResource>
@@ -208,12 +344,31 @@
     <None Include="Resources\Логотип-ФЦТ-горизонт-02 300.png" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\..\..\Projects\m_use\Projects\FtcLicensing\FtcLicensing.csproj">
+      <Project>{382e87f7-514a-48d6-b340-0b048395ea5f}</Project>
+      <Name>FtcLicensing</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\..\Projects\m_use\Projects\MFtcFinalInterview\MFtcFinalInterview.csproj">
+      <Project>{78F166F7-EBC5-4059-AB00-CBE7F08F5C59}</Project>
+      <Name>MFtcFinalInterview</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\..\Projects\m_use\Projects\MFtcPck\MFtcPck.csproj">
+      <Project>{D45324F7-3FC1-431F-9F71-D814994EC005}</Project>
+      <Name>MFtcPck</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\..\..\Projects\m_use\Projects\MFtcSfl\MFtcSfl.csproj">
       <Project>{8a051c2e-1889-490b-b5ff-e155052ad220}</Project>
       <Name>MFtcSfl</Name>
     </ProjectReference>
+    <ProjectReference Include="..\..\..\..\Projects\m_use\Projects\MFtcUtils\MFtcUtils.csproj">
+      <Project>{25846a90-f39a-4c9c-a2e8-f66c9abd16b6}</Project>
+      <Name>MFtcUtils</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\..\Projects\m_use\Projects\RT\RT.csproj">
+      <Project>{b15e73bd-8250-4736-8342-11580f496463}</Project>
+      <Name>RT</Name>
+    </ProjectReference>
   </ItemGroup>
-  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it.
        Other similar extension points exist, see Microsoft.Common.targets.

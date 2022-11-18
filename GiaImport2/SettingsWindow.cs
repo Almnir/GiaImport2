@@ -4,24 +4,18 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
+using static GiaImport2.Services.CommonRepository;
 
 namespace GiaImport2
 {
     public partial class SettingsWindow : DevExpress.XtraEditors.XtraForm
     {
-        /// <summary>
-        /// Структура атрибутов для дополнительных данных в реквизитах
-        /// </summary>
-        [Serializable]
-        public struct SettingsAttributes
-        {
-            public string name { get; set; }
-            public string value { get; set; }
-        }
+        ICommonRepository CommonRepository;
 
-        public SettingsWindow()
+        public SettingsWindow(ICommonRepository commonRepository)
         {
             InitializeComponent();
+            this.CommonRepository = commonRepository;
         }
 
         private void CancelButton_Click(object sender, EventArgs e)
@@ -36,7 +30,7 @@ namespace GiaImport2
 
         private void SettingsWindow_Load(object sender, EventArgs e)
         {
-            var credentials = Globals.GetCredentials();
+            var credentials = CommonRepository.GetCredentials();
             if (credentials.Item1 != null)
             {
                 LoginText.Text = credentials.Item1;
@@ -59,7 +53,7 @@ namespace GiaImport2
                 return;
             }
             // создаём объект реквизитов
-            var cred = new NetworkCredential(LoginText.Text.Trim(), PasswordText.Text.Trim(), Globals.TARGET_CREDENTIAL).ToICredential();
+            var cred = new NetworkCredential(LoginText.Text.Trim(), PasswordText.Text.Trim()).ToICredential();
             cred.TargetName = Globals.TARGET_CREDENTIAL;
             cred.Persistance = Persistance.LocalMachine;
             // добавляем атрибуты с дополнительными данными
