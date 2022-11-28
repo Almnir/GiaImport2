@@ -65,6 +65,7 @@ namespace GiaImport2
             // Register your types, for instance:
             container.Register<ICommonRepository, CommonRepository>(Lifestyle.Singleton);
             container.Register<IInterviewRepository, InterviewRepository>(Lifestyle.Transient);
+            container.Register<IImportXMLFilesService, ImportXMLFilesService>(Lifestyle.Transient);
 
             AutoRegisterWindowsForms(container);
 

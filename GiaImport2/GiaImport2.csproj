@@ -134,6 +134,7 @@
       <HintPath>..\packages\System.Data.SqlClient.4.3.0\lib\net46\System.Data.SqlClient.dll</HintPath>
     </Reference>
     <Reference Include="System.IO.Compression" />
+    <Reference Include="System.IO.Compression.FileSystem" />
     <Reference Include="System.Runtime.Remoting" />
     <Reference Include="System.Runtime.Serialization" />
     <Reference Include="System.ServiceModel" />
@@ -153,10 +154,11 @@
     <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="BackgroundPanel.cs">
+    <Compile Include="Models\ImportXMLFilesDto.cs" />
+    <Compile Include="Panels\BackgroundPanel.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="BackgroundPanel.Designer.cs">
+    <Compile Include="Panels\BackgroundPanel.Designer.cs">
       <DependentUpon>BackgroundPanel.cs</DependentUpon>
     </Compile>
     <Compile Include="BarcodeGenerator.cs" />
@@ -165,10 +167,10 @@
     <Compile Include="DataModels\gia.generated.cs" />
     <Compile Include="Enumerations\FileStatus.cs" />
     <Compile Include="Enumerations\SchoolOrClassChoice.cs" />
-    <Compile Include="ExportInterviewPanel.cs">
+    <Compile Include="Panels\ExportInterviewPanel.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="ExportInterviewPanel.Designer.cs">
+    <Compile Include="Panels\ExportInterviewPanel.Designer.cs">
       <DependentUpon>ExportInterviewPanel.cs</DependentUpon>
     </Compile>
     <Compile Include="ExportInterviewWizard.cs">
@@ -187,10 +189,10 @@
       <DependentUpon>GiaImportSplashScreen.cs</DependentUpon>
     </Compile>
     <Compile Include="Globals.cs" />
-    <Compile Include="ImportGridPanel.cs">
+    <Compile Include="Panels\ImportGridPanel.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="ImportGridPanel.Designer.cs">
+    <Compile Include="Panels\ImportGridPanel.Designer.cs">
       <DependentUpon>ImportGridPanel.cs</DependentUpon>
     </Compile>
     <Compile Include="MainForm.cs">
@@ -201,6 +203,7 @@
     </Compile>
     <Compile Include="Models\CacheData.cs" />
     <Compile Include="Models\ExportInterviewDto.cs" />
+    <Compile Include="Models\FilesInfo.cs" />
     <Compile Include="Models\Governmentinfo.cs" />
     <Compile Include="Models\Participantinfo.cs" />
     <Compile Include="Models\ParticipantsExamsModel.cs" />
@@ -208,13 +211,19 @@
     <Compile Include="Models\SchoolClasses.cs" />
     <Compile Include="Models\Schoolinfo.cs" />
     <Compile Include="Models\SheetsModel.cs" />
-    <Compile Include="PreCheckControl.cs">
+    <Compile Include="Panels\PreCheckControl.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="PreCheckControl.Designer.cs">
+    <Compile Include="Panels\PreCheckControl.Designer.cs">
       <DependentUpon>PreCheckControl.cs</DependentUpon>
     </Compile>
     <Compile Include="Program.cs" />
+    <Compile Include="ProgressBarSingleBar.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="ProgressBarSingleBar.Designer.cs">
+      <DependentUpon>ProgressBarSingleBar.cs</DependentUpon>
+    </Compile>
     <Compile Include="ProgressBarWindow.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -228,22 +237,22 @@
     <Compile Include="ResultForm.Designer.cs">
       <DependentUpon>ResultForm.cs</DependentUpon>
     </Compile>
-    <Compile Include="ResultStatisticsControl.cs">
+    <Compile Include="Panels\ResultStatisticsControl.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="ResultStatisticsControl.Designer.cs">
+    <Compile Include="Panels\ResultStatisticsControl.Designer.cs">
       <DependentUpon>ResultStatisticsControl.cs</DependentUpon>
     </Compile>
-    <Compile Include="SchoolsClassesPanel.cs">
+    <Compile Include="Panels\SchoolsClassesPanel.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="SchoolsClassesPanel.Designer.cs">
+    <Compile Include="Panels\SchoolsClassesPanel.Designer.cs">
       <DependentUpon>SchoolsClassesPanel.cs</DependentUpon>
     </Compile>
-    <Compile Include="SchoolsPanel.cs">
+    <Compile Include="Panels\SchoolsPanel.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="SchoolsPanel.Designer.cs">
+    <Compile Include="Panels\SchoolsPanel.Designer.cs">
       <DependentUpon>SchoolsPanel.cs</DependentUpon>
     </Compile>
     <Compile Include="Services\BulkManager.cs" />
@@ -252,8 +261,10 @@
     <Compile Include="Services\IGlobals.cs" />
     <Compile Include="Services\ICommonRepository.cs" />
     <Compile Include="Services\CommonRepository.cs" />
+    <Compile Include="Services\IImportXMLFilesService.cs" />
     <Compile Include="Services\IInterviewRepository.cs" />
     <Compile Include="Services\ImportFinalInterviewService.cs" />
+    <Compile Include="Services\ImportXMLFilesService.cs" />
     <Compile Include="Services\InterviewRepository.cs" />
     <Compile Include="SettingsWindow.cs">
       <SubType>Form</SubType>
@@ -269,10 +280,10 @@
     </Compile>
     <Compile Include="StringExtension.cs" />
     <Compile Include="Models\TableInfo.cs" />
-    <EmbeddedResource Include="BackgroundPanel.resx">
+    <EmbeddedResource Include="Panels\BackgroundPanel.resx">
       <DependentUpon>BackgroundPanel.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="ExportInterviewPanel.resx">
+    <EmbeddedResource Include="Panels\ExportInterviewPanel.resx">
       <DependentUpon>ExportInterviewPanel.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="ExportInterviewWizard.resx">
@@ -284,15 +295,18 @@
     <EmbeddedResource Include="GiaImportSplashScreen.resx">
       <DependentUpon>GiaImportSplashScreen.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="ImportGridPanel.resx">
+    <EmbeddedResource Include="Panels\ImportGridPanel.resx">
       <DependentUpon>ImportGridPanel.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="MainForm.resx">
       <DependentUpon>MainForm.cs</DependentUpon>
       <SubType>Designer</SubType>
     </EmbeddedResource>
-    <EmbeddedResource Include="PreCheckControl.resx">
+    <EmbeddedResource Include="Panels\PreCheckControl.resx">
       <DependentUpon>PreCheckControl.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ProgressBarSingleBar.resx">
+      <DependentUpon>ProgressBarSingleBar.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="ProgressBarWindow.resx">
       <DependentUpon>ProgressBarWindow.cs</DependentUpon>
@@ -311,13 +325,13 @@
     <EmbeddedResource Include="ResultForm.resx">
       <DependentUpon>ResultForm.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="ResultStatisticsControl.resx">
+    <EmbeddedResource Include="Panels\ResultStatisticsControl.resx">
       <DependentUpon>ResultStatisticsControl.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="SchoolsClassesPanel.resx">
+    <EmbeddedResource Include="Panels\SchoolsClassesPanel.resx">
       <DependentUpon>SchoolsClassesPanel.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="SchoolsPanel.resx">
+    <EmbeddedResource Include="Panels\SchoolsPanel.resx">
       <DependentUpon>SchoolsPanel.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="SettingsWindow.resx">

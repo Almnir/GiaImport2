@@ -179,7 +179,8 @@ namespace GiaImport2
                 CloseProgressBar();
 
                 DataTable dt = BulkManager.PrepareImportXMLStatistics(filesInfo, filesInfoStats);
-                ResultForm resultForm = new ResultForm("Итого");
+                ResultForm resultForm = new ResultForm();
+                resultForm.SetTitle("Итого");
                 ResultStatisticsControl resultStatistics = new ResultStatisticsControl(dt, bm.outLog.ToString());
                 resultForm.GetPanelControl().AddControl(resultStatistics);
                 resultForm.GetPanelControl().Dock = DockStyle.Fill;
@@ -194,7 +195,6 @@ namespace GiaImport2
 
         private void MainProcess(List<string> allFiles, DoWorkEventArgs e)
         {
-            //GetAllDataToCache(allFiles);
             int i = 1;
             int total = allFiles.Count;
             foreach (var file in allFiles)
@@ -224,121 +224,6 @@ namespace GiaImport2
                 i += 1;
             }
         }
-        private void GetAllDataToCache(List<string> allFiles)
-        {
-            DataConnection dc = null;
-            GIA_DB db = null;
-            try
-            {
-                using (dc = SqlServerTools.CreateDataConnection(CommonRepository.GetConnection()))
-                using (db = new GIA_DB(dc.DataProvider, CommonRepository.GetConnection()))
-                {
-                    db.BeginTransaction();
-
-                    using (var tempTable = db.CreateTempTable(allFiles))
-                    {
-                        this.CacheData.sht_Packages = db.sht_Packages.SchemaName("loader")
-                        .Where(pa => tempTable.Contains(pa.FileName)
-                                  && pa.SubjectCode == 20
-                                  && pa.TestTypeCode == 9
-                        );
-                        this.CacheData.sht_Sheets_Rs = db.sht_Sheets_R.SchemaName("loader")
-                        .Where(pa => tempTable.Contains(pa.FileName)
-                                  && pa.SubjectCode == 20
-                                  && pa.TestTypeCode == 9
-                        );
-                        this.CacheData.sht_Sheets_ABs = db.sht_Sheets_AB.SchemaName("loader")
-                        .Where(pa => tempTable.Contains(pa.FileName)
-                                  && pa.SubjectCode == 20
-                                  && pa.TestTypeCode == 9
-                        );
-                        this.CacheData.sht_Sheets_Cs = db.sht_Sheets_C.SchemaName("loader")
-                        .Where(pa => tempTable.Contains(pa.FileName)
-                                  && pa.SubjectCode == 20
-                                  && pa.TestTypeCode == 9
-                        );
-                        this.CacheData.sht_Sheets_Ds = db.sht_Sheets_D.SchemaName("loader")
-                        .Where(pa => tempTable.Contains(pa.FileName)
-                                  && pa.SubjectCode == 20
-                                  && pa.TestTypeCode == 9
-                        );
-                        this.CacheData.sht_Marks_ABs = db.sht_Marks_AB.SchemaName("loader")
-                        .Where(pa => this.CacheData.sht_Sheets_ABs.Select(a => a.SheetID).Single() == pa.SheetFK);
-                        this.CacheData.sht_Marks_Cs = db.sht_Marks_C.SchemaName("loader")
-                        .Where(pa => this.CacheData.sht_Sheets_Cs.Select(a => a.SheetID).Single() == pa.SheetFK);
-                        this.CacheData.sht_Marks_Ds = db.sht_Marks_D.SchemaName("loader")
-                        .Where(pa => this.CacheData.sht_Sheets_Ds.Select(a => a.SheetID).Single() == pa.SheetFK);
-                        this.CacheData.sht_FinalMarks_Cs = db.sht_FinalMarks_C.SchemaName("loader")
-                        .Where(pa => this.CacheData.sht_Sheets_Cs.Select(a => a.SheetID).Single() == pa.SheetFK);
-                        this.CacheData.sht_FinalMarks_Ds = db.sht_FinalMarks_D.SchemaName("loader")
-                        .Where(pa => this.CacheData.sht_Sheets_Ds.Select(a => a.SheetID).Single() == pa.SheetFK);
-                    }
-
-                    db.CommitTransaction();
-                }
-            }
-            catch (Exception ex)
-            {
-                string status = string.Format("При выполнении запроса к базе данных произошла ошибка: {0}", ex.ToString());
-                log.Fatal(status);
-                db.RollbackTransaction();
-            }
-            finally
-            {
-                if (dc != null)
-                {
-                    dc.Close();
-                    dc = null;
-                }
-            }
-
-        }
-        private void SaveCacheDataToDatabase()
-        {
-            DataConnection dc = null;
-            GIA_DB db = null;
-            try
-            {
-                using (dc = SqlServerTools.CreateDataConnection(CommonRepository.GetConnection()))
-                using (db = new GIA_DB(dc.DataProvider, CommonRepository.GetConnection()))
-                {
-                    db.BeginTransaction();
-
-                    BulkCopyOptions bulkCopyOptions = new BulkCopyOptions();
-                    bulkCopyOptions.CheckConstraints = true;
-                    bulkCopyOptions.TableLock = true;
-                    db.sht_Packages.SchemaName("loader").BulkCopy(bulkCopyOptions, this.CacheData.sht_Packages);
-                    db.sht_Sheets_R.SchemaName("loader").BulkCopy(bulkCopyOptions, this.CacheData.sht_Sheets_Rs);
-                    db.sht_Sheets_AB.SchemaName("loader").BulkCopy(bulkCopyOptions, this.CacheData.sht_Sheets_ABs);
-                    db.sht_Sheets_C.SchemaName("loader").BulkCopy(bulkCopyOptions, this.CacheData.sht_Sheets_Cs);
-                    db.sht_Sheets_D.SchemaName("loader").BulkCopy(bulkCopyOptions, this.CacheData.sht_Sheets_Ds);
-
-                    db.sht_Marks_AB.SchemaName("loader").BulkCopy(bulkCopyOptions, this.CacheData.sht_Marks_ABs);
-                    db.sht_Marks_C.SchemaName("loader").BulkCopy(bulkCopyOptions, this.CacheData.sht_Marks_Cs);
-                    db.sht_Marks_D.SchemaName("loader").BulkCopy(bulkCopyOptions, this.CacheData.sht_Marks_Ds);
-                    db.sht_FinalMarks_C.SchemaName("loader").BulkCopy(bulkCopyOptions, this.CacheData.sht_FinalMarks_Cs);
-                    db.sht_FinalMarks_D.SchemaName("loader").BulkCopy(bulkCopyOptions, this.CacheData.sht_FinalMarks_Ds);
-
-                    db.CommitTransaction();
-                }
-            }
-            catch (Exception ex)
-            {
-                string status = string.Format("При выполнении запроса к базе данных произошла ошибка: {0}", ex.ToString());
-                log.Fatal(status);
-                db.RollbackTransaction();
-            }
-            finally
-            {
-                if (dc != null)
-                {
-                    dc.Close();
-                    dc = null;
-                }
-            }
-
-        }
-
         public void ImportAllData()
         {
             StringBuilder errorssb = new StringBuilder();
@@ -365,7 +250,8 @@ namespace GiaImport2
             if (!this.filesInfo.CheckForOK())
             {
                 // покажем статистику по предварительной проверке
-                ResultForm resultForm = new ResultForm("Предварительная проверка файлов");
+                ResultForm resultForm = new ResultForm();
+                resultForm.SetTitle("Предварительная проверка файлов");
                 PreCheckControl preCheckControl = new PreCheckControl();
                 resultForm.GetPanelControl().AddControl(preCheckControl);
                 resultForm.GetPanelControl().Dock = DockStyle.Fill;
@@ -830,22 +716,6 @@ namespace GiaImport2
                     Guid newPackageId = Guid.NewGuid();
                     Guid newSheetId = Guid.NewGuid();
                     string newBarcode = this.barcodeGenerator.GetNextBarcode();
-                    //// извлекаем старую дату
-                    //string sheetExamDate = db.GetTable<sht_Sheets_R>().SchemaName("loader")
-                    //    .Where(r => r.SheetID == participantData.SheetId)
-                    //    .Select(rr => rr.ExamDate).FirstOrDefault();
-                    //// извлекаем старое имя файла
-                    //string sheetFileName = db.GetTable<sht_Sheets_R>().SchemaName("loader")
-                    //    .Where(r => r.SheetID == participantData.SheetId)
-                    //    .Select(rr => rr.FileName).FirstOrDefault();
-                    //if (string.IsNullOrEmpty(sheetExamDate))
-                    //{
-                    //    oldOrNotExisting = true;
-                    //}
-                    //if (!string.IsNullOrEmpty(sheetExamDate) && !sheetExamDate.Equals(commonData.ExamDate.ToString("yyyy.MM.dd")) && !sheetFileName.Equals(this.fileName))
-                    //{
-                    //    oldOrNotExisting = true;
-                    //}
                     // ищем существующие записи в бланках dbo
                     IEnumerable<Guid> sheetRIds = db.sht_Sheets_R.SchemaName("dbo")
                         .Where(sr => sr.FileName == this.fileName
@@ -866,6 +736,7 @@ namespace GiaImport2
                         // если даты и имена не совпадают, не удаляем старые бланки
                         if (oldOrNotExisting == true)
                         {
+                            db.CommitTransaction();
                             return;
                         }
                         // проставляем неявку
@@ -885,15 +756,13 @@ namespace GiaImport2
                     newPackageId = InsertPackage(commonData, participantData, oldOrNotExisting, db);
                     InsertOrUpdateSheetsR(commonData, participantData, notFinished, db, ref newSheetId, newPackageId, oldOrNotExisting, ref newBarcode);
                     // обновляем данные или вставляем новый бланк AB
-                    InsertOrUpdateSheetsAB(commonData, participantData, notFinished, db, newSheetId, newPackageId, oldOrNotExisting, newBarcode);
+                    InsertOrUpdateSheetsAB(commonData, participantData, notFinished, db, newSheetId, newPackageId, newBarcode);
                     // обновляем данные или вставляем новый бланк D
-                    InsertOrUpdateSheetsD(commonData, participantData, notFinished, db, newSheetId, newPackageId, oldOrNotExisting, newBarcode);
+                    InsertOrUpdateSheetsD(commonData, participantData, notFinished, db, newSheetId, newPackageId, newBarcode);
                     // обновляем данные или вставляем новый бланк C
-                    InsertOrUpdateSheetsC(commonData, participantData, notFinished, db, newSheetId, newPackageId, oldOrNotExisting, newBarcode);
-                    // зачёт
-                    InsertOrUpdateMarksAB(commonData, participantData, db, Globals.TASKTYPECODE_CHECK, newSheetId, oldOrNotExisting);
-                    // итоговый балл
-                    InsertOrUpdateMarksAB(commonData, participantData, db, Globals.TASKTYPECODE_FINAL, newSheetId, oldOrNotExisting);
+                    InsertOrUpdateSheetsC(commonData, participantData, notFinished, db, newSheetId, newPackageId, newBarcode);
+                    // зачёт и итоговый балл
+                    InsertOrUpdateMarksAB(commonData, participantData, db, newSheetId);
                     // Если не закончил!
                     if (notFinished)
                     {
@@ -907,37 +776,9 @@ namespace GiaImport2
                     {
                         // если закончил!
                         // сначала вставляем критерии
-                        for (int mark = 0; mark < participantData.Cval.Length; mark++)
-                        {
-                            string markValue = string.Empty;
-                            // проверяем на лажу в оценке
-                            if (string.IsNullOrEmpty(participantData.Cval[mark]) || !participantData.Cval[mark].Any(c => char.IsDigit(c)))
-                            {
-                                markValue = "0";
-                            }
-                            else
-                            {
-                                markValue = participantData.Cval[mark];
-                            }
-                            InsertMarksD(commonData, participantData, db, mark, pageIndex, participantIndex, markValue, newSheetId, oldOrNotExisting);
-                            InsertFinalMarksD(commonData, participantData, db, mark, markValue, newSheetId, oldOrNotExisting);
-                        }
+                        InsertDs(commonData, participantData, pageIndex, participantIndex, db, newSheetId);
                         // теперь вставляем промежуточные ответы
-                        for (int answer = 0; answer < participantData.Dval.Length; answer++)
-                        {
-                            string answerValue = string.Empty;
-                            // проверяем на лажу в оценке
-                            if (string.IsNullOrEmpty(participantData.Dval[answer]) || !participantData.Dval[answer].Any(c => char.IsDigit(c)))
-                            {
-                                answerValue = "0";
-                            }
-                            else
-                            {
-                                answerValue = participantData.Dval[answer];
-                            }
-                            InsertMarksC(commonData, participantData, db, answer, pageIndex, participantIndex, answerValue, newSheetId, oldOrNotExisting);
-                            InsertFinalMarksC(commonData, participantData, db, answer, pageIndex, participantIndex, answerValue, newSheetId, oldOrNotExisting);
-                        }
+                        InsertCs(commonData, participantData, pageIndex, participantIndex, db, newSheetId);
                     }
                     // коммитим транзакцию
                     db.CommitTransaction();
@@ -960,13 +801,80 @@ namespace GiaImport2
             }
         }
 
-        private void InsertMarksD(CommonData commonData, ParticipantData participantData, GIA_DB db, int mark, int pageIndex, int participantIndex, string markValue, Guid newSheetId, bool oldOrEmpty)
+        private void InsertCs(CommonData commonData, ParticipantData participantData, int pageIndex, int participantIndex, GIA_DB db, Guid newSheetId)
         {
-            // если лажа, то просто вставляем новое
-            if (oldOrEmpty)
+            List<sht_Marks_C> marks_Cs = new List<sht_Marks_C>();
+            List<sht_FinalMarks_C> finalmarks_Cs = new List<sht_FinalMarks_C>();
+            for (int answer = 0; answer < participantData.Dval.Length; answer++)
             {
-                // insert, т.к. нету ничего
-                db.sht_Marks_D.SchemaName("loader").Insert(() => new sht_Marks_D
+                string answerValue = string.Empty;
+                // проверяем на лажу в оценке
+                if (string.IsNullOrEmpty(participantData.Dval[answer]) || !participantData.Dval[answer].Any(c => char.IsDigit(c)))
+                {
+                    answerValue = "0";
+                }
+                else
+                {
+                    answerValue = participantData.Dval[answer];
+                }
+                marks_Cs.Add(new sht_Marks_C()
+                {
+                    REGION = commonData.Region,
+                    MarkID = Guid.NewGuid(),
+                    SheetFK = newSheetId,
+                    ProtocolFile = this.fileName,
+                    ProtocolCode = pageIndex.ToString(),
+                    ProtocolCRC = commonData.PackageId.ToString(),
+                    ThirdCheck = false,
+                    RowNumber = participantIndex,
+                    TaskNumber = answer + 1,
+                    MarkValue = answerValue
+                });
+                finalmarks_Cs.Add(new sht_FinalMarks_C()
+                {
+                    REGION = commonData.Region,
+                    MarkID = Guid.NewGuid(),
+                    SheetFK = newSheetId,
+                    TaskNumber = answer + 1,
+                    MarkValue = answerValue
+                });
+            }
+            db.sht_Marks_C.SchemaName("loader")
+            .Merge()
+            .Using(marks_Cs)
+            .On((target, source) => target.SheetFK == source.SheetFK &&
+                                    target.TaskNumber == source.TaskNumber &&
+                                    target.ProtocolFile == source.ProtocolFile)
+            .UpdateWhenMatched()
+            .InsertWhenNotMatched()
+            .Merge();
+            db.sht_FinalMarks_C.SchemaName("loader")
+            .Merge()
+            .Using(finalmarks_Cs)
+            .On((target, source) => target.SheetFK == source.SheetFK &&
+                                    target.TaskNumber == source.TaskNumber)
+            .UpdateWhenMatched()
+            .InsertWhenNotMatched()
+            .Merge();
+        }
+
+        private void InsertDs(CommonData commonData, ParticipantData participantData, int pageIndex, int participantIndex, GIA_DB db, Guid newSheetId)
+        {
+            List<sht_Marks_D> marks_Ds = new List<sht_Marks_D>();
+            List<sht_FinalMarks_D> finalmarks_Ds = new List<sht_FinalMarks_D>();
+            for (int mark = 0; mark < participantData.Cval.Length; mark++)
+            {
+                string markValue = string.Empty;
+                // проверяем на лажу в оценке
+                if (string.IsNullOrEmpty(participantData.Cval[mark]) || !participantData.Cval[mark].Any(c => char.IsDigit(c)))
+                {
+                    markValue = "0";
+                }
+                else
+                {
+                    markValue = participantData.Cval[mark];
+                }
+                marks_Ds.Add(new sht_Marks_D()
                 {
                     REGION = commonData.Region,
                     MarkID = Guid.NewGuid(),
@@ -979,161 +887,32 @@ namespace GiaImport2
                     TaskNumber = mark + 1,
                     MarkValue = markValue
                 });
-            }
-            else
-            {
-                // ищем существующие записи 
-                IEnumerable<Guid> markDIds = db.sht_Marks_D.SchemaName("loader")
-                .Where(md => md.SheetFK == newSheetId && md.TaskNumber == mark + 1)
-                .Select(mdd => mdd.MarkID);
-                if (markDIds.Count() == 0)
-                {
-                    // insert, т.к. нету ничего
-                    db.sht_Marks_D.SchemaName("loader").Insert(() => new sht_Marks_D
-                    {
-                        REGION = commonData.Region,
-                        MarkID = Guid.NewGuid(),
-                        SheetFK = newSheetId,
-                        ProtocolFile = this.fileName,
-                        ProtocolCode = pageIndex.ToString(),
-                        ProtocolCRC = commonData.PackageId.ToString(),
-                        ThirdCheck = false,
-                        RowNumber = participantIndex,
-                        TaskNumber = mark + 1,
-                        MarkValue = markValue
-                    });
-                    return;
-                }
-                // если больше одной записи, это плохо, это дубль
-                if (markDIds.Count() > 1)
-                {
-                    log.Error(string.Format("Более одной записи sht_Marks_D для sheetfk: {0}", participantData.SheetId));
-                    // пофиг, берём первую попавшуюся (может быть удалять?)
-                }
-                Guid markDId = markDIds.FirstOrDefault();
-                if (markDId != null && !markDId.Equals(Guid.Empty))
-                {
-                    // update, т.к. нашли MarkID
-                    db.sht_Marks_D.SchemaName("loader")
-                        .Where(md => md.SheetFK == newSheetId && md.MarkID == markDId)
-                        .Set((s) => s.MarkValue, markValue)
-                        .Update();
-                }
-            }
-        }
-
-        private void InsertMarksC(CommonData commonData, ParticipantData participantData, GIA_DB db, int answer, int pageIndex, int participantIndex, string answerValue, Guid newSheetId, bool oldOrEmpty)
-        {
-            // если лажа, то просто вставляем новое
-            if (oldOrEmpty)
-            {
-                // insert, т.к. нету ничего
-                db.sht_Marks_C.SchemaName("loader").Insert(() => new sht_Marks_C
+                finalmarks_Ds.Add(new sht_FinalMarks_D()
                 {
                     REGION = commonData.Region,
                     MarkID = Guid.NewGuid(),
                     SheetFK = newSheetId,
-                    ProtocolFile = this.fileName,
-                    ProtocolCode = pageIndex.ToString(),
-                    ProtocolCRC = commonData.PackageId.ToString(),
-                    ThirdCheck = false,
-                    RowNumber = participantIndex,
-                    TaskNumber = answer + 1,
-                    MarkValue = answerValue
+                    TaskNumber = mark + 1,
+                    MarkValue = markValue
                 });
             }
-            else
-            {
-                // ищем существующие записи 
-                IEnumerable<Guid> markCIds = db.sht_Marks_C.SchemaName("loader")
-                .Where(md => md.SheetFK == newSheetId && md.TaskNumber == answer + 1)
-                .Select(mdd => mdd.MarkID);
-                if (markCIds.Count() == 0)
-                {
-                    // insert, т.к. нету ничего
-                    db.sht_Marks_C.SchemaName("loader").Insert(() => new sht_Marks_C
-                    {
-                        REGION = commonData.Region,
-                        MarkID = Guid.NewGuid(),
-                        SheetFK = newSheetId,
-                        ProtocolFile = this.fileName,
-                        ProtocolCode = pageIndex.ToString(),
-                        ProtocolCRC = commonData.PackageId.ToString(),
-                        ThirdCheck = false,
-                        RowNumber = participantIndex,
-                        TaskNumber = answer + 1,
-                        MarkValue = answerValue
-                    });
-                    return;
-                }
-                // если больше одной записи, это плохо, это дубль
-                if (markCIds.Count() > 1)
-                {
-                    log.Error(string.Format("Более одной записи sht_Marks_C для sheetfk: {0}", participantData.SheetId));
-                    // пофиг, берём первую попавшуюся (может быть удалять?)
-                }
-                Guid markCId = markCIds.FirstOrDefault();
-                if (markCId != null && !markCId.Equals(Guid.Empty))
-                {
-                    // update, т.к. нашли MarkID
-                    db.sht_Marks_C.SchemaName("loader")
-                        .Where(md => md.SheetFK == newSheetId && md.MarkID == markCId)
-                        .Set((s) => s.MarkValue, answerValue)
-                        .Update();
-                }
-            }
-        }
-
-        private void InsertFinalMarksC(CommonData commonData, ParticipantData participantData, GIA_DB db, int answer, int pageIndex, int participantIndex, string answerValue, Guid newSheetId, bool oldOrEmpty)
-        {
-            // если лажа, то просто вставляем новое
-            if (oldOrEmpty)
-            {
-                // insert, т.к. нету ничего
-                db.sht_FinalMarks_C.SchemaName("loader").Insert(() => new sht_FinalMarks_C
-                {
-                    REGION = commonData.Region,
-                    MarkID = Guid.NewGuid(),
-                    SheetFK = newSheetId,
-                    TaskNumber = answer + 1,
-                    MarkValue = answerValue
-                });
-            }
-            else
-            {
-                // ищем существующие записи 
-                IEnumerable<Guid> markCIds = db.sht_FinalMarks_C.SchemaName("loader")
-                .Where(md => md.SheetFK == newSheetId && md.TaskNumber == answer + 1)
-                .Select(mdd => mdd.MarkID);
-                if (markCIds.Count() == 0)
-                {
-                    // insert, т.к. нету ничего
-                    db.sht_FinalMarks_C.SchemaName("loader").Insert(() => new sht_FinalMarks_C
-                    {
-                        REGION = commonData.Region,
-                        MarkID = Guid.NewGuid(),
-                        SheetFK = newSheetId,
-                        TaskNumber = answer + 1,
-                        MarkValue = answerValue
-                    });
-                    return;
-                }
-                // если больше одной записи, это плохо, это дубль
-                if (markCIds.Count() > 1)
-                {
-                    log.Error(string.Format("Более одной записи sht_FinalMarks_C для sheetfk: {0}", participantData.SheetId));
-                    // пофиг, берём первую попавшуюся (может быть удалять?)
-                }
-                Guid markCId = markCIds.FirstOrDefault();
-                if (markCId != null && !markCId.Equals(Guid.Empty))
-                {
-                    // update, т.к. нашли MarkID
-                    db.sht_FinalMarks_C.SchemaName("loader")
-                        .Where(md => md.SheetFK == newSheetId && md.MarkID == markCId)
-                        .Set((s) => s.MarkValue, answerValue)
-                        .Update();
-                }
-            }
+            db.sht_Marks_D.SchemaName("loader")
+            .Merge()
+            .Using(marks_Ds)
+            .On((target, source) => target.SheetFK == source.SheetFK &&
+                                    target.TaskNumber == source.TaskNumber &&
+                                    target.ProtocolFile == source.ProtocolFile)
+            .UpdateWhenMatched()
+            .InsertWhenNotMatched()
+            .Merge();
+            db.sht_FinalMarks_D.SchemaName("loader")
+            .Merge()
+            .Using(finalmarks_Ds)
+            .On((target, source) => target.SheetFK == source.SheetFK &&
+                                    target.TaskNumber == source.TaskNumber)
+            .UpdateWhenMatched()
+            .InsertWhenNotMatched()
+            .Merge();
         }
 
         private void InsertFinalMarksD(CommonData commonData, ParticipantData participantData, GIA_DB db, int mark, string markValue, Guid newSheetId, bool oldOrEmpty)
@@ -1188,130 +967,80 @@ namespace GiaImport2
             }
         }
 
-        private void InsertOrUpdateSheetsD(CommonData commonData, ParticipantData participantData, bool notFinished, GIA_DB db, Guid newSheetId, Guid newPackageId, bool oldOrEmpty, string newBarcode)
+        private void InsertOrUpdateSheetsD(CommonData commonData, ParticipantData participantData, bool notFinished, GIA_DB db, Guid newSheetId, Guid newPackageId, string newBarcode)
         {
-            // ищем существующие записи 
-            IEnumerable<Guid> sheetDIds = db.sht_Sheets_D.SchemaName("loader")
-            .Where(sad => sad.SheetID == newSheetId
-                && sad.ExamDate.Equals(commonData.ExamDate.ToString("yyyy.MM.dd"))
-                && sad.FileName == this.fileName
-                && sad.SubjectCode == 20
-                && sad.TestTypeCode == 9
-            )
-            .Select(sadd => sadd.SheetID);
-            // если больше одной записи, это плохо, это дубль
-            if (sheetDIds.Count() > 1)
+            List<sht_Sheets_D> sht_Sheets_Ds = new List<sht_Sheets_D>();
+            var sheet_D = new sht_Sheets_D()
             {
-                log.Error(string.Format("Более одной записи sht_Sheets_D для sheetid: {0}", participantData.SheetId));
-                // пофиг, берём первую попавшуюся (может быть удалять?)
-            }
-            Guid sheetDId = sheetDIds.FirstOrDefault();
-            // если лажа, то просто вставляем новое
-            if (sheetDIds.Count() == 0)
-            {
-                // insert, т.к. нету ничего
-                db.sht_Sheets_D.SchemaName("loader").Insert(() => new sht_Sheets_D
-                {
-                    REGION = commonData.Region,
-                    SheetID = newSheetId,
-                    PackageFK = newPackageId,
-                    FileName = this.fileName,
-                    RegionCode = commonData.Region,
-                    DepartmentCode = this.fileName.Substring(0, 4),
-                    TestTypeCode = 9,
-                    SubjectCode = commonData.SubjectCode,
-                    ExamDate = commonData.ExamDate.ToString("yyyy.MM.dd"),
-                    StationCode = commonData.SchoolCode,
-                    AuditoriumCode = notFinished ? "" : participantData.AuditoryCode,
-                    SheetCode = int.Parse(newBarcode.Substring(5, 7)),
-                    IsEmpty = false,
-                    ImageNumber = 1,
-                    VariantCode = notFinished ? 0 : participantData.VariantCode,
-                    Condition = 20,
-                    ProjectBatchID = -1,
-                    Reserve01 = participantData.ExpertSurname,
-                    Barcode = newBarcode.ReplaceAt(2, '0')
-                });
-            }
-            else
-            {
-                if (sheetDId != null && !sheetDId.Equals(Guid.Empty))
-                {
-                    // update, т.к. нашли sheetid
-                    db.sht_Sheets_D.SchemaName("loader")
-                        .Where(sab => sab.SheetID == sheetDId)
-                        .Set((s) => s.DepartmentCode, this.fileName.Substring(0, 4))
-                        .Set((s) => s.SubjectCode, commonData.SubjectCode)
-                        .Set((s) => s.StationCode, commonData.SchoolCode)
-                        .Set((s) => s.AuditoriumCode, notFinished ? "" : participantData.AuditoryCode)
-                        .Set((s) => s.VariantCode, notFinished ? 0 : participantData.VariantCode)
-                        .Set((s) => s.Reserve01, participantData.ExpertSurname)
-                        .Update();
-                }
-            }
+                REGION = commonData.Region,
+                SheetID = newSheetId,
+                PackageFK = newPackageId,
+                FileName = this.fileName,
+                RegionCode = commonData.Region,
+                DepartmentCode = this.fileName.Substring(0, 4),
+                TestTypeCode = 9,
+                SubjectCode = commonData.SubjectCode,
+                ExamDate = commonData.ExamDate.ToString("yyyy.MM.dd"),
+                StationCode = commonData.SchoolCode,
+                AuditoriumCode = notFinished ? "" : participantData.AuditoryCode,
+                SheetCode = int.Parse(newBarcode.Substring(5, 7)),
+                IsEmpty = false,
+                ImageNumber = 1,
+                VariantCode = notFinished ? 0 : participantData.VariantCode,
+                Condition = 20,
+                ProjectBatchID = -1,
+                Reserve01 = participantData.ExpertSurname,
+                Barcode = newBarcode.ReplaceAt(2, '0')
+            };
+            sht_Sheets_Ds.Add(sheet_D);
+            db.sht_Sheets_D.SchemaName("loader")
+            .Merge()
+            .Using(sht_Sheets_Ds)
+            .On((target, source) => target.SheetID == source.SheetID &&
+                                    target.PackageFK == source.PackageFK &&
+                                    target.FileName == source.FileName &&
+                                    target.ExamDate == source.ExamDate)
+            .UpdateWhenMatched()
+            .InsertWhenNotMatched()
+            .Merge();
         }
 
-        private void InsertOrUpdateSheetsC(CommonData commonData, ParticipantData participantData, bool notFinished, GIA_DB db, Guid newSheetId, Guid newPackageId, bool oldOrEmpty, string newBarcode)
+        private void InsertOrUpdateSheetsC(CommonData commonData, ParticipantData participantData, bool notFinished, GIA_DB db, Guid newSheetId, Guid newPackageId, string newBarcode)
         {
-            // ищем существующие записи 
-            IEnumerable<Guid> sheetCIds = db.sht_Sheets_C.SchemaName("loader")
-            .Where(sad => sad.SheetID == newSheetId
-                && sad.ExamDate.Equals(commonData.ExamDate.ToString("yyyy.MM.dd"))
-                && sad.FileName == this.fileName
-                && sad.SubjectCode == 20
-                && sad.TestTypeCode == 9
-            )
-            .Select(sadd => sadd.SheetID);
-            // если больше одной записи, это плохо, это дубль
-            if (sheetCIds.Count() > 1)
+            List<sht_Sheets_C> sht_Sheets_Cs = new List<sht_Sheets_C>();
+            var sheet_C = new sht_Sheets_C()
             {
-                log.Error(string.Format("Более одной записи sht_Sheets_C для sheetid: {0}", participantData.SheetId));
-                // пофиг, берём первую попавшуюся (может быть удалять?)
-            }
-            Guid sheetCId = sheetCIds.FirstOrDefault();
-            // если лажа, то просто вставляем новое
-            if (sheetCIds.Count() == 0)
-            {
-                // insert, т.к. нету ничего
-                db.sht_Sheets_C.SchemaName("loader").Insert(() => new sht_Sheets_C
-                {
-                    REGION = commonData.Region,
-                    SheetID = newSheetId,
-                    PackageFK = newPackageId,
-                    FileName = this.fileName,
-                    RegionCode = commonData.Region,
-                    DepartmentCode = this.fileName.Substring(0, 4),
-                    TestTypeCode = 9,
-                    SubjectCode = commonData.SubjectCode,
-                    ExamDate = commonData.ExamDate.ToString("yyyy.MM.dd"),
-                    StationCode = commonData.SchoolCode,
-                    AuditoriumCode = notFinished ? "" : participantData.AuditoryCode,
-                    SheetCode = int.Parse(newBarcode.Substring(5, 7)),
-                    IsEmpty = false,
-                    ImageNumber = 1,
-                    VariantCode = notFinished ? 0 : participantData.VariantCode,
-                    Condition = 20,
-                    ProjectBatchID = -1,
-                    Reserve01 = participantData.ExpertSurname,
-                    Barcode = newBarcode.ReplaceAt(2, '2')
-                });
-            }
-            else
-            {
-                if (sheetCId != null && !sheetCId.Equals(Guid.Empty))
-                {
-                    // update, т.к. нашли sheetid
-                    db.sht_Sheets_C.SchemaName("loader")
-                        .Where(sab => sab.SheetID == sheetCId)
-                        .Set((s) => s.DepartmentCode, this.fileName.Substring(0, 4))
-                        .Set((s) => s.SubjectCode, commonData.SubjectCode)
-                        .Set((s) => s.StationCode, commonData.SchoolCode)
-                        .Set((s) => s.AuditoriumCode, notFinished ? "" : participantData.AuditoryCode)
-                        .Set((s) => s.VariantCode, notFinished ? 0 : participantData.VariantCode)
-                        .Set((s) => s.Reserve01, participantData.ExpertSurname)
-                        .Update();
-                }
-            }
+                REGION = commonData.Region,
+                SheetID = newSheetId,
+                PackageFK = newPackageId,
+                FileName = this.fileName,
+                RegionCode = commonData.Region,
+                DepartmentCode = this.fileName.Substring(0, 4),
+                TestTypeCode = 9,
+                SubjectCode = commonData.SubjectCode,
+                ExamDate = commonData.ExamDate.ToString("yyyy.MM.dd"),
+                StationCode = commonData.SchoolCode,
+                AuditoriumCode = notFinished ? "" : participantData.AuditoryCode,
+                SheetCode = int.Parse(newBarcode.Substring(5, 7)),
+                IsEmpty = false,
+                ImageNumber = 1,
+                VariantCode = notFinished ? 0 : participantData.VariantCode,
+                Condition = 20,
+                ProjectBatchID = -1,
+                Reserve01 = participantData.ExpertSurname,
+                Barcode = newBarcode.ReplaceAt(2, '2')
+            };
+            sht_Sheets_Cs.Add(sheet_C);
+            db.sht_Sheets_C.SchemaName("loader")
+            .Merge()
+            .Using(sht_Sheets_Cs)
+            .On((target, source) => target.SheetID == source.SheetID &&
+                                    target.PackageFK == source.PackageFK &&
+                                    target.FileName == source.FileName &&
+                                    target.ExamDate == source.ExamDate)
+            .UpdateWhenMatched()
+            .InsertWhenNotMatched()
+            .Merge();
         }
 
         private Guid InsertPackage(CommonData commonData, ParticipantData participantData, bool oldOrNotExisting, GIA_DB db)
@@ -1342,7 +1071,7 @@ namespace GiaImport2
             {
                 // ищем существующие записи dbo
                 packagesIds = db.sht_Packages.SchemaName("dbo")
-                    .Where(pa => pa.ExamDate == commonData.ExamDate.ToString("yyyy.MM.dd") 
+                    .Where(pa => pa.ExamDate == commonData.ExamDate.ToString("yyyy.MM.dd")
                               && pa.FileName == this.fileName
                               && pa.SubjectCode == 20
                               && pa.TestTypeCode == 9
@@ -1480,66 +1209,41 @@ namespace GiaImport2
                 }
             }
         }
-        private void InsertOrUpdateSheetsAB(CommonData commonData, ParticipantData participantData, bool notFinished, GIA_DB db, Guid newSheetId, Guid newPackageId, bool oldOrEmpty, string newBarcode)
+        private void InsertOrUpdateSheetsAB(CommonData commonData, ParticipantData participantData, bool notFinished, GIA_DB db, Guid newSheetId, Guid newPackageId, string newBarcode)
         {
-            // ищем существующие записи 
-            IEnumerable<Guid> sheetABIds = db.sht_Sheets_AB.SchemaName("loader")
-                .Where(sab => sab.SheetID == newSheetId
-                && sab.ExamDate == commonData.ExamDate.ToString("yyyy.MM.dd")
-                && sab.FileName == this.fileName
-                && sab.SubjectCode == 20
-                && sab.TestTypeCode == 9
-                )
-                .Select(sabb => sabb.SheetID);
-            // если больше одной записи, это плохо, это дубль
-            if (sheetABIds != null && sheetABIds.Count() > 1)
+            List<sht_Sheets_AB> sht_Sheets_ABs = new List<sht_Sheets_AB>();
+            var sheet_AB = new sht_Sheets_AB()
             {
-                log.Error(string.Format("Более одной записи sht_Sheets_AB для sheetid: {0}", participantData.SheetId));
-                // пофиг, берём первую попавшуюся (может быть удалять?)
-            }
-            Guid sheetABId = sheetABIds.FirstOrDefault();
-            // если лажа, то просто вставляем новое
-            if (sheetABIds.Count() == 0)
-            {
-                // insert, т.к. нету ничего
-                db.sht_Sheets_AB.SchemaName("loader").Insert(() => new sht_Sheets_AB
-                {
-                    REGION = commonData.Region,
-                    SheetID = newSheetId,
-                    PackageFK = newPackageId,
-                    FileName = this.fileName,
-                    RegionCode = commonData.Region,
-                    DepartmentCode = this.fileName.Substring(0, 4),
-                    TestTypeCode = 9,
-                    SubjectCode = commonData.SubjectCode,
-                    ExamDate = commonData.ExamDate.ToString("yyyy.MM.dd"),
-                    StationCode = commonData.SchoolCode,
-                    AuditoriumCode = notFinished ? "" : participantData.AuditoryCode,
-                    ImageNumber = 1,
-                    VariantCode = notFinished ? 0 : participantData.VariantCode,
-                    HasSignature = true,
-                    Condition = 20,
-                    ProjectBatchID = -1,
-                    Reserve02 = participantData.Property == 7 ? "22" : "0",
-                    Barcode = newBarcode.ReplaceAt(2, '1')
-                });
-            }
-            else
-            {
-                if (sheetABId != null && !sheetABId.Equals(Guid.Empty))
-                {
-                    // update, т.к. нашли sheetid
-                    db.sht_Sheets_AB.SchemaName("loader")
-                        .Where(sab => sab.SheetID == sheetABId)
-                        .Set((s) => s.DepartmentCode, this.fileName.Substring(0, 4))
-                        .Set((s) => s.SubjectCode, commonData.SubjectCode)
-                        .Set((s) => s.StationCode, commonData.SchoolCode)
-                        .Set((s) => s.AuditoriumCode, notFinished ? "" : participantData.AuditoryCode)
-                        .Set((s) => s.VariantCode, notFinished ? 0 : participantData.VariantCode)
-                        .Set((s) => s.Reserve02, participantData.Property == 7 ? "22" : "0")
-                        .Update();
-                }
-            }
+                REGION = commonData.Region,
+                SheetID = newSheetId,
+                PackageFK = newPackageId,
+                FileName = this.fileName,
+                RegionCode = commonData.Region,
+                DepartmentCode = this.fileName.Substring(0, 4),
+                TestTypeCode = 9,
+                SubjectCode = commonData.SubjectCode,
+                ExamDate = commonData.ExamDate.ToString("yyyy.MM.dd"),
+                StationCode = commonData.SchoolCode,
+                AuditoriumCode = notFinished ? "" : participantData.AuditoryCode,
+                ImageNumber = 1,
+                VariantCode = notFinished ? 0 : participantData.VariantCode,
+                HasSignature = true,
+                Condition = 20,
+                ProjectBatchID = -1,
+                Reserve02 = participantData.Property == 7 ? "22" : "0",
+                Barcode = newBarcode.ReplaceAt(2, '1')
+            };
+            sht_Sheets_ABs.Add(sheet_AB);
+            db.sht_Sheets_AB.SchemaName("loader")
+            .Merge()
+            .Using(sht_Sheets_ABs)
+            .On((target, source) => target.SheetID == source.SheetID &&
+                                    target.PackageFK == source.PackageFK &&
+                                    target.FileName == source.FileName &&
+                                    target.ExamDate == source.ExamDate)
+            .UpdateWhenMatched()
+            .InsertWhenNotMatched()
+            .Merge();
         }
 
         /// <summary>
@@ -1548,82 +1252,57 @@ namespace GiaImport2
         /// <param name="commonData"></param>
         /// <param name="participantData"></param>
         /// <param name="db"></param>
-        private static void InsertOrUpdateMarksAB(CommonData commonData, ParticipantData participantData, GIA_DB db, int tasktypecode, Guid newSheetId, bool oldOrEmpty)
+        private static void InsertOrUpdateMarksAB(CommonData commonData, ParticipantData participantData, GIA_DB db, Guid newSheetId)
         {
+            List<sht_Marks_AB> marks_ABs = new List<sht_Marks_AB>();
             string answerValue = string.Empty;
-            if (tasktypecode == Globals.TASKTYPECODE_CHECK)
+            // проверяем на лажу в зачёте
+            if (string.IsNullOrEmpty(participantData.CheckMark) || !participantData.CheckMark.Any(c => char.IsDigit(c)))
             {
-                // проверяем на лажу в зачёте
-                if (string.IsNullOrEmpty(participantData.CheckMark) || !participantData.CheckMark.Any(c => char.IsDigit(c)))
-                {
-                    answerValue = "0";
-                }
-                else
-                {
-                    answerValue = participantData.CheckMark;
-                }
-            }
-            else if (tasktypecode == Globals.TASKTYPECODE_FINAL)
-            {
-                // проверяем на лажу в итоговом
-                if (string.IsNullOrEmpty(participantData.FinalMark) || !participantData.FinalMark.Any(c => char.IsDigit(c)))
-                {
-                    answerValue = "0";
-                }
-                else
-                {
-                    answerValue = participantData.FinalMark;
-                }
-            }
-            // ищем существующие записи по данному внешнему ключу бланка и тасккоду и таскномеру 1
-            IEnumerable<Guid> markABIds = db.sht_Marks_AB.SchemaName("loader")
-                .Where(mab => mab.SheetFK == newSheetId && mab.TaskTypeCode == tasktypecode && mab.TaskNumber == 1)
-                .Select(mabb => mabb.MarkID);
-            // если больше одной записи, это плохо, это дубль
-            if (markABIds.Count() > 1)
-            {
-                log.Error(string.Format("Более одной записи sht_Marks_AB TaskTypeCode = {0}, TaskNumber = 1 для sheetfk: {1}", tasktypecode, participantData.SheetId));
-                // пофиг, берём первую попавшуюся (может быть удалять?)
-            }
-            Guid markABId = markABIds.FirstOrDefault();
-            // если лажа, то просто вставляем
-            if (oldOrEmpty && markABIds.Count() == 0)
-            {
-                // insert, т.к. нету ничего
-                db.sht_Marks_AB.SchemaName("loader").Insert(() => new sht_Marks_AB
-                {
-                    REGION = commonData.Region,
-                    MarkID = Guid.NewGuid(),
-                    SheetFK = newSheetId,
-                    TaskTypeCode = tasktypecode,
-                    TaskNumber = 1,
-                    AnswerValue = answerValue
-                });
+                answerValue = "0";
             }
             else
             {
-                if (markABId != null && !markABId.Equals(Guid.Empty))
-                {
-                    // update, т.к. нашли markid
-                    db.sht_Marks_AB.SchemaName("loader")
-                        .Where(mab => mab.MarkID == markABId)
-                        .Set((m) => m.AnswerValue, answerValue)
-                        .Update();
-                }
-                else
-                {
-                    // insert, т.к. нету ничего
-                    db.sht_Marks_AB.SchemaName("loader").Insert(() => new sht_Marks_AB
-                    {
-                        REGION = commonData.Region,
-                        MarkID = Guid.NewGuid(),
-                        SheetFK = newSheetId,
-                        TaskTypeCode = tasktypecode,
-                        TaskNumber = 1,
-                        AnswerValue = answerValue
-                    });
-                }
+                answerValue = participantData.CheckMark;
             }
+            var mark_AB = new sht_Marks_AB()
+            {
+                REGION = commonData.Region,
+                MarkID = Guid.NewGuid(),
+                SheetFK = newSheetId,
+                TaskTypeCode = 0,
+                TaskNumber = 1,
+                AnswerValue = answerValue
+            };
+            marks_ABs.Add(mark_AB);
+            // проверяем на лажу в итоговом
+            if (string.IsNullOrEmpty(participantData.FinalMark) || !participantData.FinalMark.Any(c => char.IsDigit(c)))
+            {
+                answerValue = "0";
+            }
+            else
+            {
+                answerValue = participantData.FinalMark;
+            }
+            mark_AB = new sht_Marks_AB()
+            {
+                REGION = commonData.Region,
+                MarkID = Guid.NewGuid(),
+                SheetFK = newSheetId,
+                TaskTypeCode = 1,
+                TaskNumber = 1,
+                AnswerValue = answerValue
+            };
+            marks_ABs.Add(mark_AB);
+            db.sht_Marks_AB.SchemaName("loader")
+                .Merge()
+                .Using(marks_ABs)
+                .On((target, source) => target.SheetFK == source.SheetFK &&
+                                        target.TaskTypeCode == source.TaskTypeCode &&
+                                        target.TaskNumber == source.TaskNumber)
+                .UpdateWhenMatched()
+                .InsertWhenNotMatched()
+            .Merge();
         }
 
         private void UpdatePackagesSuccessCondition(CommonData commonData)

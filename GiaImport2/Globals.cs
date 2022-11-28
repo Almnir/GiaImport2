@@ -1,7 +1,4 @@
-﻿using AdysTech.CredentialManager;
-using System;
-using System.Collections.Generic;
-using static GiaImport2.SettingsWindow;
+﻿using System.Collections.Generic;
 
 namespace GiaImport2
 {

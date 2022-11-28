@@ -186,7 +186,7 @@ namespace GiaImport2.Services
                                 SubjectCode = 20,
                                 TestTypeCode = 9,
                                 FinishTime = DateTime.Now.ToString(),
-                                FinishUserName = Globals.frmSettings.LoginText
+                                FinishUserName = CommonRepository.GetCredentials().UserName
                             });
                     }
                     else

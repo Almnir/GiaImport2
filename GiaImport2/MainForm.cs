@@ -1,11 +1,17 @@
-﻿using DevExpress.Utils.Extensions;
+﻿using DevExpress.Data;
+using DevExpress.Utils.Extensions;
 using DevExpress.XtraBars;
+using DevExpress.XtraEditors;
+using DevExpress.XtraGrid;
+using DevExpress.XtraGrid.Views.Grid;
 using GiaImport2.Models;
 using GiaImport2.Services;
 using MFtcUtils.Helpers;
+using NLog.Fluent;
 using SimpleInjector;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Windows.Forms;
@@ -17,14 +23,16 @@ namespace GiaImport2
         private readonly Container DIContainer;
         ICommonRepository CommonRepository;
         IInterviewRepository InterviewRepository;
+        private readonly IImportXMLFilesService ImportXMLFilesService;
 
-        public MainForm(Container container, ICommonRepository commonRepository, IInterviewRepository interviewRepository)
+        public MainForm(Container container, ICommonRepository commonRepository, IInterviewRepository interviewRepository, IImportXMLFilesService importXMLFilesService)
         {
             InitializeComponent();
             DevExpress.Skins.SkinManager.EnableFormSkins();
             this.DIContainer = container;
             this.CommonRepository = commonRepository;
             this.InterviewRepository = interviewRepository;
+            this.ImportXMLFilesService = importXMLFilesService;
         }
 
         private void MainForm_Load(object sender, EventArgs e)
@@ -165,12 +173,119 @@ namespace GiaImport2
 
         private void OpenXMLFilesButton_ItemClick(object sender, DevExpress.XtraBars.ItemClickEventArgs e)
         {
-            //FormsHelper.ShowStyledMessageBox("fff", CommonRepository.GetCurrentScheme().Version);
+            XtraOpenFileDialog openFileDialog = new XtraOpenFileDialog();
+
+            openFileDialog.Filter = "Zip Files (.zip)|*.zip|All Files (*.*)|*.*";
+            openFileDialog.FilterIndex = 1;
+
+            openFileDialog.Multiselect = false;
+
+            DialogResult userClicked = openFileDialog.ShowDialog();
+
+            if (userClicked == DialogResult.OK)
+            {
+                // проверить имена файлов
+                if (ImportXMLFilesService.CheckFilesNames(openFileDialog.FileName) == false)
+                {
+                    MessageBox.Show("Имена файлов должны соответствовать названию таблиц!");
+                    return;
+                }
+                if (!Directory.Exists(Globals.frmSettings.TempDirectoryText == null ?
+                    Path.Combine(Path.GetTempPath(), "Tempdir") : Path.Combine(Globals.frmSettings.TempDirectoryText, "Tempdir")))
+                {
+                    // создать временный каталог
+                    Directory.CreateDirectory(Globals.frmSettings.TempDirectoryText == null ?
+                        Path.Combine(Path.GetTempPath(), "Tempdir") : Path.Combine(Globals.frmSettings.TempDirectoryText, "Tempdir"));
+                }
+                // очистить временный каталог
+                ImportXMLFilesService.ClearFiles();
+                // Добавляем панель
+                ImportGridPanel importGridPanel = new ImportGridPanel();
+                importGridPanel.Dock = DockStyle.Fill;
+                MainPanel.Controls.Clear();
+                MainPanel.Controls.Add(importGridPanel);
+                System.ComponentModel.BindingList<ImportXMLFilesDto> importViews = new System.ComponentModel.BindingList<ImportXMLFilesDto>();
+                importGridPanel.GetImportGridPanelGrid().DataSource = importViews;
+                GridColumnSummaryItem siTotal = new GridColumnSummaryItem();
+                siTotal.SummaryType = SummaryItemType.Count;
+                siTotal.DisplayFormat = "Всего: {0}";
+                siTotal.FieldName= "CreationTime";
+                importGridPanel.GetImportGridPanelView().Columns["CreationTime"].Summary.Add(siTotal);
+                // распаковать выбранный архив во временный каталог
+                ImportXMLFilesService.UnpackFiles(openFileDialog.FileName, ribbonControl1,
+                    (filedto) =>
+                    {
+                        importGridPanel.GetImportGridPanelGrid().Invoke((MethodInvoker)(() =>
+                        {
+                            importViews.Add(filedto);
+                            importGridPanel.GetImportGridPanelGrid().Refresh();
+                        }));
+                    }
+                );
+                // сохраняем в конфигурации
+                Globals.frmSettings.LastPathText = openFileDialog.FileName;
+                Globals.frmSettings.Save();
+            }
+
         }
 
         private void ImportInterviewButton_ItemClick(object sender, ItemClickEventArgs e)
         {
+            splashScreenManager1.ShowWaitForm();
+            if (CommonRepository.GetConnection() == null)
+            {
+                splashScreenManager1.CloseWaitForm();
+                MessageBox.Show("Настройки базы данных не установлены!", "Внимание!");
+                return;
+            }
+            if (CommonRepository.CheckConnection() == false)
+            {
+                splashScreenManager1.CloseWaitForm();
+                MessageBox.Show("Нет соединения с базой данных!", "Внимание!");
+                return;
+            }
+            splashScreenManager1.CloseWaitForm();
+            XtraFolderBrowserDialog openDialog = new XtraFolderBrowserDialog();
 
+            DialogResult userClicked = openDialog.ShowDialog();
+
+            if (userClicked == DialogResult.Cancel)
+            {
+                return;
+            }
+            // проверяем на длину пути
+            if (userClicked == DialogResult.OK)
+            {
+                //try
+                //{
+                //    statusLabel.Text = openDialog.SelectedPath;
+                //}
+                //catch (PathTooLongException)
+                //{
+                //    log.Error("Слишком длинный путь!");
+                //    MessageBox.Show("Внимание!", "Слишком длинный путь!");
+                //    return;
+                //}
+                //if (string.IsNullOrEmpty(openDialog.SelectedPath))
+                //{
+                //    return;
+                //}
+                //this.metroListView1.Clear();
+                //this.metroListView1.Refresh();
+                //CancellationTokenSource source = new CancellationTokenSource();
+                //ProgressBarWindow pbw = new ProgressBarWindow(source);
+                //pbw.SetTitle("Импорт данных выполняется...");
+                //ProgressBar pbarTotal = pbw.GetProgressBarTotal();
+                //ProgressBar pbarLine = pbw.GetProgressBarLine();
+
+                //XMLImporter xmi = new XMLImporter(openDialog.SelectedPath, this, pbw, source);
+                //pbw.FormClosed += (a, e) => { source.Cancel(); };
+                //DisableButtons();
+                //pbw.Show();
+                //pbw.Focus();
+                //xmi.ImportAllData();
+                //EnableDisableButtons();
+            }
         }
     }
 }

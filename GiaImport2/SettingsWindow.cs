@@ -2,8 +2,10 @@
 using GiaImport2.Services;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Net;
+using System.Windows.Forms;
 using static GiaImport2.Services.CommonRepository;
 
 namespace GiaImport2
@@ -38,6 +40,17 @@ namespace GiaImport2
                 ServerText.Text = credentials.Item3;
                 DatabaseText.Text = credentials.Item4;
             }
+            // загрузка из формсеттингов
+            if (string.IsNullOrWhiteSpace(Globals.frmSettings.TempDirectoryText ?? ""))
+            {
+                TmpFolderEdit.Text = Path.GetTempPath();
+            }
+            else
+            {
+                TmpFolderEdit.Text = Globals.frmSettings.TempDirectoryText;
+            }
+            CleanOnExceptionEdit.Enabled = Properties.Settings.Default.PuraSurEraroAktivigi;
+            CleanOnExceptionEdit.Checked = Globals.frmSettings.PuraSurEraro;
         }
 
         private void OkButton_Click(object sender, EventArgs e)
@@ -64,6 +77,20 @@ namespace GiaImport2
             cred.Attributes.Add("DatabaseAttribute", database);
             // сохраняем реквизиты
             cred.SaveCredential();
+            // сохранение в формсеттинги
+            // проверяем заданный подкаталог
+            if (!Directory.Exists(TmpFolderEdit.Text.Trim()))
+            {
+                FormsHelper.ShowStyledMessageBox("Неверный путь для каталога временных файлов!", "Внимание!");
+                return;
+            }
+            else 
+            {
+                Globals.frmSettings.TempDirectoryText = TmpFolderEdit.Text.Trim();
+            }
+            Globals.frmSettings.PuraSurEraro = CleanOnExceptionEdit.Checked;
+
+            Globals.frmSettings.Save();
             this.Close();
         }
     }

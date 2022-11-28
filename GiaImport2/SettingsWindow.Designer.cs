@@ -42,6 +42,9 @@ namespace GiaImport2
             this.groupControl2 = new DevExpress.XtraEditors.GroupControl();
             this.OkButton = new DevExpress.XtraEditors.SimpleButton();
             this.CancelSettingsButton = new DevExpress.XtraEditors.SimpleButton();
+            this.TempFolderLabel = new DevExpress.XtraEditors.LabelControl();
+            this.TmpFolderEdit = new DevExpress.XtraEditors.ButtonEdit();
+            this.CleanOnExceptionEdit = new DevExpress.XtraEditors.CheckEdit();
             ((System.ComponentModel.ISupportInitialize)(this.groupControl1)).BeginInit();
             this.groupControl1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.PasswordText.Properties)).BeginInit();
@@ -49,6 +52,9 @@ namespace GiaImport2
             ((System.ComponentModel.ISupportInitialize)(this.DatabaseText.Properties)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.ServerText.Properties)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.groupControl2)).BeginInit();
+            this.groupControl2.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.TmpFolderEdit.Properties)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.CleanOnExceptionEdit.Properties)).BeginInit();
             this.SuspendLayout();
             // 
             // groupControl1
@@ -143,15 +149,18 @@ namespace GiaImport2
             // 
             // groupControl2
             // 
+            this.groupControl2.Controls.Add(this.CleanOnExceptionEdit);
+            this.groupControl2.Controls.Add(this.TempFolderLabel);
+            this.groupControl2.Controls.Add(this.TmpFolderEdit);
             this.groupControl2.Location = new System.Drawing.Point(2, 172);
             this.groupControl2.Name = "groupControl2";
-            this.groupControl2.Size = new System.Drawing.Size(570, 163);
+            this.groupControl2.Size = new System.Drawing.Size(570, 73);
             this.groupControl2.TabIndex = 1;
             this.groupControl2.Text = "Прочие настройки";
             // 
             // OkButton
             // 
-            this.OkButton.Location = new System.Drawing.Point(138, 368);
+            this.OkButton.Location = new System.Drawing.Point(141, 260);
             this.OkButton.Name = "OkButton";
             this.OkButton.Size = new System.Drawing.Size(75, 23);
             this.OkButton.TabIndex = 2;
@@ -160,18 +169,47 @@ namespace GiaImport2
             // 
             // CancelSettingsButton
             // 
-            this.CancelSettingsButton.Location = new System.Drawing.Point(358, 368);
+            this.CancelSettingsButton.Location = new System.Drawing.Point(361, 260);
             this.CancelSettingsButton.Name = "CancelSettingsButton";
             this.CancelSettingsButton.Size = new System.Drawing.Size(75, 23);
             this.CancelSettingsButton.TabIndex = 3;
             this.CancelSettingsButton.Text = "Отменить";
             this.CancelSettingsButton.Click += new System.EventHandler(this.CancelButton_Click);
             // 
+            // TempFolderLabel
+            // 
+            this.TempFolderLabel.Location = new System.Drawing.Point(10, 24);
+            this.TempFolderLabel.Name = "TempFolderLabel";
+            this.TempFolderLabel.Size = new System.Drawing.Size(123, 13);
+            this.TempFolderLabel.TabIndex = 9;
+            this.TempFolderLabel.Text = "Подкаталог распаковки";
+            // 
+            // TmpFolderEdit
+            // 
+            this.TmpFolderEdit.Location = new System.Drawing.Point(139, 21);
+            this.TmpFolderEdit.Name = "TmpFolderEdit";
+            this.TmpFolderEdit.Properties.Buttons.AddRange(new DevExpress.XtraEditors.Controls.EditorButton[] {
+            new DevExpress.XtraEditors.Controls.EditorButton()});
+            this.TmpFolderEdit.Properties.LookAndFeel.SkinName = "Office 2013 Light Gray";
+            this.TmpFolderEdit.Properties.LookAndFeel.UseDefaultLookAndFeel = false;
+            this.TmpFolderEdit.Properties.PasswordChar = '*';
+            this.TmpFolderEdit.Properties.UseSystemPasswordChar = true;
+            this.TmpFolderEdit.Size = new System.Drawing.Size(426, 20);
+            this.TmpFolderEdit.TabIndex = 9;
+            // 
+            // CleanOnExceptionEdit
+            // 
+            this.CleanOnExceptionEdit.Location = new System.Drawing.Point(6, 44);
+            this.CleanOnExceptionEdit.Name = "CleanOnExceptionEdit";
+            this.CleanOnExceptionEdit.Properties.Caption = "Очищать временные таблицы при ошибке";
+            this.CleanOnExceptionEdit.Size = new System.Drawing.Size(240, 19);
+            this.CleanOnExceptionEdit.TabIndex = 10;
+            // 
             // SettingsWindow
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(574, 408);
+            this.ClientSize = new System.Drawing.Size(574, 297);
             this.Controls.Add(this.CancelSettingsButton);
             this.Controls.Add(this.OkButton);
             this.Controls.Add(this.groupControl2);
@@ -189,6 +227,10 @@ namespace GiaImport2
             ((System.ComponentModel.ISupportInitialize)(this.DatabaseText.Properties)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.ServerText.Properties)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.groupControl2)).EndInit();
+            this.groupControl2.ResumeLayout(false);
+            this.groupControl2.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.TmpFolderEdit.Properties)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.CleanOnExceptionEdit.Properties)).EndInit();
             this.ResumeLayout(false);
 
         }
@@ -208,5 +250,8 @@ namespace GiaImport2
         private DevExpress.XtraEditors.LabelControl labelControl3;
         private DevExpress.XtraEditors.LabelControl labelControl2;
         private DevExpress.XtraEditors.LabelControl labelControl1;
+        private DevExpress.XtraEditors.LabelControl TempFolderLabel;
+        private DevExpress.XtraEditors.ButtonEdit TmpFolderEdit;
+        private DevExpress.XtraEditors.CheckEdit CleanOnExceptionEdit;
     }
 }
