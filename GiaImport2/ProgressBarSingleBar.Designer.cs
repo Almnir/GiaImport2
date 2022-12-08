@@ -55,19 +55,25 @@
             // 
             // pbLabel
             // 
-            this.pbLabel.Location = new System.Drawing.Point(110, 6);
+            this.pbLabel.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.pbLabel.Appearance.Options.UseTextOptions = true;
+            this.pbLabel.Appearance.TextOptions.HAlignment = DevExpress.Utils.HorzAlignment.Center;
+            this.pbLabel.AutoSizeMode = DevExpress.XtraEditors.LabelAutoSizeMode.Horizontal;
+            this.pbLabel.Location = new System.Drawing.Point(12, 5);
             this.pbLabel.Name = "pbLabel";
             this.pbLabel.Size = new System.Drawing.Size(0, 13);
             this.pbLabel.TabIndex = 0;
             // 
-            // ProgressBarMarquee
+            // ProgressBarSingleBar
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(535, 117);
             this.Controls.Add(this.panelControl1);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedToolWindow;
-            this.Name = "ProgressBarMarquee";
+            this.Name = "ProgressBarSingleBar";
             this.Text = "Выполнение";
             this.TopMost = true;
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.ProgressBarMarquee_FormClosing);

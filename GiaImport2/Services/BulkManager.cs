@@ -17,13 +17,11 @@ using System.Linq;
 using System.Text;
 using System.Xml;
 using System.Xml.Linq;
-using Container = SimpleInjector.Container;
 
 namespace GiaImport2.Services
 {
     class BulkManager
     {
-        private static Logger log = LogManager.GetCurrentClassLogger();
 
         public ConcurrentDictionary<string, Tuple<string, long, TimeSpan>> errorDict = new ConcurrentDictionary<string, Tuple<string, long, TimeSpan>>();
 
@@ -62,7 +60,7 @@ namespace GiaImport2.Services
                         errorCount = (int)returnParameter.Value;
                         if (errorCount != 0)
                         {
-                            log.Error("Ошибки слияния: " + errorCount);
+                            CommonRepository.GetLogger().Error("Ошибки слияния: " + errorCount);
                         }
                     }
                 }
@@ -70,8 +68,8 @@ namespace GiaImport2.Services
             catch (Exception ex)
             {
                 string status = string.Format("При выполнении слияния была обнаружена ошибка: {0}", ex.ToString());
-                log.Error(status);
-                log.Error(this.outLog.ToString());
+                CommonRepository.GetLogger().Error(status);
+                CommonRepository.GetLogger().Error(this.outLog.ToString());
                 throw new Exception(status);
             }
         }
@@ -100,8 +98,8 @@ namespace GiaImport2.Services
             catch (Exception ex)
             {
                 string status = string.Format("При выполнении комплектования была обнаружена ошибка: {0}", ex.ToString());
-                log.Error(status);
-                log.Error(this.outLog.ToString());
+                CommonRepository.GetLogger().Error(status);
+                CommonRepository.GetLogger().Error(this.outLog.ToString());
                 throw new Exception(status);
             }
         }
@@ -128,8 +126,8 @@ namespace GiaImport2.Services
             catch (Exception ex)
             {
                 string status = string.Format("При выполнении конвертации была обнаружена ошибка: {0}", ex.ToString());
-                log.Error(status);
-                log.Error(this.outLog.ToString());
+                CommonRepository.GetLogger().Error(status);
+                CommonRepository.GetLogger().Error(this.outLog.ToString());
                 throw new Exception(status);
             }
         }
@@ -157,8 +155,8 @@ namespace GiaImport2.Services
             catch (Exception ex)
             {
                 string status = string.Format("При выполнении очистки основных таблиц была обнаружена ошибка: {0}", ex.ToString());
-                log.Error(status);
-                log.Error(this.outLog.ToString());
+                CommonRepository.GetLogger().Error(status);
+                CommonRepository.GetLogger().Error(this.outLog.ToString());
                 throw new Exception(status);
             }
         }
@@ -203,7 +201,7 @@ namespace GiaImport2.Services
             catch (Exception ex)
             {
                 string status = string.Format("При выполнении запроса к базе данных произошла ошибка: {0}", ex.ToString());
-                log.Fatal(status);
+                CommonRepository.GetLogger().Fatal(status);
                 throw new Exception(status);
             }
             finally
@@ -234,7 +232,7 @@ namespace GiaImport2.Services
             catch (Exception ex)
             {
                 string status = string.Format("При выполнении запроса к базе данных произошла ошибка: {0}", ex.ToString());
-                log.Fatal(status);
+                CommonRepository.GetLogger().Fatal(status);
             }
             finally
             {
@@ -276,7 +274,7 @@ namespace GiaImport2.Services
             catch (Exception ex)
             {
                 status = string.Format("При попытке получения кода региона произошла ошибка: {0}", ex.ToString());
-                log.Error(status);
+                CommonRepository.GetLogger().Error(status);
             }
             return sb.ToString();
         }
@@ -291,7 +289,7 @@ namespace GiaImport2.Services
                     if (err.Number > 0)
                     {
                         this.outLog.Append(err.Message).Append(Environment.NewLine);
-                        log.Info(err.Message);
+                        CommonRepository.GetLogger().Info(err.Message);
                     }
                     else
                     {
@@ -325,7 +323,7 @@ namespace GiaImport2.Services
             catch (Exception ex)
             {
                 string status = string.Format("При выполнении запроса статистики была обнаружена ошибка: {0}", ex.ToString());
-                log.Error(status);
+                CommonRepository.GetLogger().Error(status);
                 throw new Exception(status);
             }
             return dt;
@@ -410,7 +408,7 @@ namespace GiaImport2.Services
                 catch (Exception exep)
                 {
                     string status = string.Format("Адаптер не смог загрузить таблицу {0}, была обнаружена ошибка: {1}", tablename, exep.ToString());
-                    log.Error(status);
+                    CommonRepository.GetLogger().Error(status);
                     throw new Exception();
                 }
 
@@ -427,7 +425,7 @@ namespace GiaImport2.Services
                         catch (Exception exe)
                         {
                             string status = string.Format("При выполнении чтения и преобразования данных GetXMLAndConvertToDataTable из файла таблицы {0} была обнаружена ошибка: {1}", tablename, exe.ToString());
-                            log.Error(status);
+                            CommonRepository.GetLogger().Error(status);
                             break;
                         }
 

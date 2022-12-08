@@ -2,6 +2,7 @@
 using FtcLicensing;
 using GiaImport2.DataModels;
 using LinqToDB;
+using LinqToDB.Data;
 using LinqToDB.DataProvider.SqlServer;
 using MFtcSfl;
 using MFtcUtils.Digest.Enumerators;
@@ -40,7 +41,7 @@ namespace GiaImport2.Services
             return scheme;
         }
         public string _connectionString { get; set; }
-        
+
         public void SetupConnectionString(string serverText, string databaseText, string loginText, string passwordText)
         {
             _connectionString = string.Format("Server={0};Database={1};User Id={2};Password={3};Application Name=GiaImport v.{4}", serverText, databaseText, loginText, passwordText, Properties.Settings.Default.Version);
@@ -383,6 +384,56 @@ namespace GiaImport2.Services
                 result = (int)command.ExecuteScalar() > 0;
             }
             return result;
+        }
+        /// <summary>
+        /// Проверка на существование сразу трёх хранимок, необходимых для работы софта
+        /// </summary>
+        /// <returns></returns>
+        public bool CheckIfStoredExist()
+        {
+            int result = 0;
+            try
+            {
+                using (var dc = SqlServerTools.CreateDataConnection(GetConnection()))
+                using (var db = new GIA_DB(dc.DataProvider, GetConnection()))
+                {
+                    var query = db.Query<int>(@"COUNT(ROUTINE_SCHEMA)
+                                    FROM INFORMATION_SCHEMA.ROUTINES
+                                    WHERE ROUTINE_NAME IN ('Synchronize', 'CleanupTables', 'Statistics')
+                                    and ROUTINE_SCHEMA = 'loader'");
+                    result = query.FirstOrDefault();
+                }
+            }
+            catch (Exception ex)
+            {
+                string status = string.Format("При попытке получения данных о количестве хранимых процедур произошла ошибка: {0}", ex.ToString());
+                GetLogger().Error(status);
+            }
+            return result == 3;
+        }
+        public void DeleteLoaderTables()
+        {
+            var sb = new StringBuilder();
+            foreach (var item in Globals.TABLES_NAMES_FOR_DELETE)
+            {
+                sb.AppendLine($"TRUNCATE TABLE loader.{item};");
+            }
+            using (var dc = SqlServerTools.CreateDataConnection(GetConnection()))
+            using (var db = new GIA_DB(dc.DataProvider, GetConnection()))
+            {
+                try
+                {
+                    db.BeginTransaction();
+                    db.Execute(sb.ToString());
+                    db.CommitTransaction();
+                }
+                catch (Exception ex)
+                {
+                    db.RollbackTransaction();
+                    string status = string.Format("При попытке удаления данных временных таблиц произошла ошибка: {0}", ex.ToString());
+                    GetLogger().Error(status);
+                }
+            }
         }
     }
 }

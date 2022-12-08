@@ -23,5 +23,6 @@ namespace GiaImport2.Services
         void RunStoredConvertation(string packageMask);
         void RunDeleteSynchronize(int tableGroup);
         bool IsDataTableExists(string schemaName, string tableName);
+        bool CheckIfStoredExist();
     }
 }
