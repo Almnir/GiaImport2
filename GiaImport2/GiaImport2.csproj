@@ -154,6 +154,13 @@
     <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="MessageForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="MessageForm.Designer.cs">
+      <DependentUpon>MessageForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="MessageShowControl.cs" />
     <Compile Include="Models\ImportXMLFilesDto.cs" />
     <Compile Include="Panels\BackgroundPanel.cs">
       <SubType>UserControl</SubType>
@@ -255,6 +262,12 @@
     <Compile Include="Panels\SchoolsPanel.Designer.cs">
       <DependentUpon>SchoolsPanel.cs</DependentUpon>
     </Compile>
+    <Compile Include="ResultWindowWithLog.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="ResultWindowWithLog.Designer.cs">
+      <DependentUpon>ResultWindowWithLog.cs</DependentUpon>
+    </Compile>
     <Compile Include="Services\BulkManager.cs" />
     <Compile Include="Services\ExportFinalInterviewService.cs" />
     <Compile Include="Enumerations\FilesInfoStats.cs" />
@@ -266,6 +279,8 @@
     <Compile Include="Services\ImportFinalInterviewService.cs" />
     <Compile Include="Services\ImportXMLFilesService.cs" />
     <Compile Include="Services\InterviewRepository.cs" />
+    <Compile Include="Services\Verifier.cs" />
+    <Compile Include="Services\VerifyException.cs" />
     <Compile Include="SettingsWindow.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -280,6 +295,9 @@
     </Compile>
     <Compile Include="StringExtension.cs" />
     <Compile Include="Models\TableInfo.cs" />
+    <EmbeddedResource Include="MessageForm.resx">
+      <DependentUpon>MessageForm.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Panels\BackgroundPanel.resx">
       <DependentUpon>BackgroundPanel.cs</DependentUpon>
     </EmbeddedResource>
@@ -333,6 +351,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Panels\SchoolsPanel.resx">
       <DependentUpon>SchoolsPanel.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ResultWindowWithLog.resx">
+      <DependentUpon>ResultWindowWithLog.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="SettingsWindow.resx">
       <DependentUpon>SettingsWindow.cs</DependentUpon>

@@ -111,6 +111,7 @@
             this.ValidateXMLButton.ImageOptions.LargeImage = ((System.Drawing.Image)(resources.GetObject("ValidateXMLButton.ImageOptions.LargeImage")));
             this.ValidateXMLButton.Name = "ValidateXMLButton";
             this.ValidateXMLButton.RibbonStyle = DevExpress.XtraBars.Ribbon.RibbonItemStyles.Large;
+            this.ValidateXMLButton.ItemClick += new DevExpress.XtraBars.ItemClickEventHandler(this.ValidateXMLButton_ItemClick);
             // 
             // ImportXMLFilesButton
             // 
@@ -120,6 +121,7 @@
             this.ImportXMLFilesButton.ImageOptions.LargeImage = ((System.Drawing.Image)(resources.GetObject("ImportXMLFilesButton.ImageOptions.LargeImage")));
             this.ImportXMLFilesButton.Name = "ImportXMLFilesButton";
             this.ImportXMLFilesButton.RibbonStyle = DevExpress.XtraBars.Ribbon.RibbonItemStyles.Large;
+            this.ImportXMLFilesButton.ItemClick += new DevExpress.XtraBars.ItemClickEventHandler(this.ImportXMLFilesButton_ItemClick);
             // 
             // ExportInterviewButton
             // 

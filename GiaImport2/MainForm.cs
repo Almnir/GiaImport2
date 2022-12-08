@@ -2,6 +2,7 @@
 using DevExpress.Utils.Extensions;
 using DevExpress.XtraBars;
 using DevExpress.XtraEditors;
+using DevExpress.XtraExport.Helpers;
 using DevExpress.XtraGrid;
 using DevExpress.XtraGrid.Views.Grid;
 using GiaImport2.Models;
@@ -10,7 +11,9 @@ using MFtcUtils.Helpers;
 using NLog.Fluent;
 using SimpleInjector;
 using System;
+using System.Collections;
 using System.Collections.Generic;
+using System.Data;
 using System.IO;
 using System.Linq;
 using System.Threading;
@@ -24,6 +27,7 @@ namespace GiaImport2
         ICommonRepository CommonRepository;
         IInterviewRepository InterviewRepository;
         private readonly IImportXMLFilesService ImportXMLFilesService;
+        ImportGridPanel ImportGridPanel;
 
         public MainForm(Container container, ICommonRepository commonRepository, IInterviewRepository interviewRepository, IImportXMLFilesService importXMLFilesService)
         {
@@ -174,6 +178,7 @@ namespace GiaImport2
         private void OpenXMLFilesButton_ItemClick(object sender, DevExpress.XtraBars.ItemClickEventArgs e)
         {
             XtraOpenFileDialog openFileDialog = new XtraOpenFileDialog();
+            openFileDialog.RestoreDirectory = true;
 
             openFileDialog.Filter = "Zip Files (.zip)|*.zip|All Files (*.*)|*.*";
             openFileDialog.FilterIndex = 1;
@@ -187,7 +192,7 @@ namespace GiaImport2
                 // проверить имена файлов
                 if (ImportXMLFilesService.CheckFilesNames(openFileDialog.FileName) == false)
                 {
-                    MessageBox.Show("Имена файлов должны соответствовать названию таблиц!");
+                    MessageBox.Show("Имена файлов должны соответствовать названиям таблиц!");
                     return;
                 }
                 if (!Directory.Exists(Globals.frmSettings.TempDirectoryText == null ?
@@ -200,25 +205,25 @@ namespace GiaImport2
                 // очистить временный каталог
                 ImportXMLFilesService.ClearFiles();
                 // Добавляем панель
-                ImportGridPanel importGridPanel = new ImportGridPanel();
-                importGridPanel.Dock = DockStyle.Fill;
+                ImportGridPanel = new ImportGridPanel();
+                ImportGridPanel.Dock = DockStyle.Fill;
                 MainPanel.Controls.Clear();
-                MainPanel.Controls.Add(importGridPanel);
+                MainPanel.Controls.Add(ImportGridPanel);
                 System.ComponentModel.BindingList<ImportXMLFilesDto> importViews = new System.ComponentModel.BindingList<ImportXMLFilesDto>();
-                importGridPanel.GetImportGridPanelGrid().DataSource = importViews;
+                ImportGridPanel.GetImportGridPanelGrid().DataSource = importViews;
                 GridColumnSummaryItem siTotal = new GridColumnSummaryItem();
                 siTotal.SummaryType = SummaryItemType.Count;
                 siTotal.DisplayFormat = "Всего: {0}";
                 siTotal.FieldName= "CreationTime";
-                importGridPanel.GetImportGridPanelView().Columns["CreationTime"].Summary.Add(siTotal);
+                ImportGridPanel.GetImportGridPanelView().Columns["CreationTime"].Summary.Add(siTotal);
                 // распаковать выбранный архив во временный каталог
                 ImportXMLFilesService.UnpackFiles(openFileDialog.FileName, ribbonControl1,
                     (filedto) =>
                     {
-                        importGridPanel.GetImportGridPanelGrid().Invoke((MethodInvoker)(() =>
+                        ImportGridPanel.GetImportGridPanelGrid().Invoke((MethodInvoker)(() =>
                         {
                             importViews.Add(filedto);
-                            importGridPanel.GetImportGridPanelGrid().Refresh();
+                            ImportGridPanel.GetImportGridPanelGrid().Refresh();
                         }));
                     }
                 );
@@ -235,13 +240,13 @@ namespace GiaImport2
             if (CommonRepository.GetConnection() == null)
             {
                 splashScreenManager1.CloseWaitForm();
-                MessageBox.Show("Настройки базы данных не установлены!", "Внимание!");
+                FormsHelper.ShowStyledMessageBox("Внимание!", "Настройки базы данных не установлены!");
                 return;
             }
             if (CommonRepository.CheckConnection() == false)
             {
                 splashScreenManager1.CloseWaitForm();
-                MessageBox.Show("Нет соединения с базой данных!", "Внимание!");
+                FormsHelper.ShowStyledMessageBox("Внимание!", "Нет соединения с базой данных!");
                 return;
             }
             splashScreenManager1.CloseWaitForm();
@@ -286,6 +291,98 @@ namespace GiaImport2
                 //xmi.ImportAllData();
                 //EnableDisableButtons();
             }
+        }
+
+        private void ValidateXMLButton_ItemClick(object sender, ItemClickEventArgs e)
+        {
+            // определим выбранные файлы
+            List<ImportXMLFilesDto> checkedFiles = this.GetActualCheckedFiles();
+            if (checkedFiles == null)
+            {
+                FormsHelper.ShowStyledMessageBox("Внимание!", "Ни одного файла не выбрано!");
+                return;
+            }
+            splashScreenManager1.ShowWaitForm();
+            if (CommonRepository.GetConnection() == null)
+            {
+                splashScreenManager1.CloseWaitForm();
+                FormsHelper.ShowStyledMessageBox("Внимание!", "Настройки базы данных не установлены!");
+                return;
+            }
+            if (CommonRepository.CheckConnection() == false)
+            {
+                splashScreenManager1.CloseWaitForm();
+                FormsHelper.ShowStyledMessageBox("Внимание!", "Нет соединения с базой данных!");
+                return;
+            }
+            splashScreenManager1.CloseWaitForm();
+
+            ImportXMLFilesService.ValidateFiles(ImportGridPanel, ribbonControl1, checkedFiles,
+                (message) =>
+                {
+                    Invoke((MethodInvoker)(() =>
+                    {
+                        MessageShowControl.ShowValidationErrors(message);
+                    }));
+                },
+                    (tableinfosErrors) =>
+                    {
+                        Invoke((MethodInvoker)(() =>
+                        { 
+                            ResultWindowWithLog rw = new ResultWindowWithLog();
+                            rw.SetTitle("Итого");
+                            rw.SetTableData(tableinfosErrors.tableInfos);
+                            rw.SetLogData(tableinfosErrors.dependencyErrors);
+                            rw.ShowDialog();
+                        }));
+                    }
+                );
+        }
+
+        private List<ImportXMLFilesDto> GetActualCheckedFiles()
+        {
+            List<ImportXMLFilesDto> rows = new List<ImportXMLFilesDto>();
+            int[] selectedRows = this.ImportGridPanel.GetImportGridPanelView().GetSelectedRows();
+            if (selectedRows.Length == 0) return null;
+            for (int i = 0; i < selectedRows.Length; i++)
+            {
+                int selectedRowHandle = selectedRows[i];
+                if (selectedRowHandle >= 0)
+                    rows.Add((ImportXMLFilesDto)this.ImportGridPanel.GetImportGridPanelView().GetRow(selectedRowHandle));
+            }
+            return rows;
+        }
+
+        private void ImportXMLFilesButton_ItemClick(object sender, ItemClickEventArgs e)
+        {
+            // определим выбранные файлы
+            List<ImportXMLFilesDto> checkedFiles = this.GetActualCheckedFiles();
+            if (checkedFiles == null)
+            {
+                FormsHelper.ShowStyledMessageBox("Внимание!", "Ни одного файла не выбрано!");
+                return;
+            }
+            splashScreenManager1.ShowWaitForm();
+            if (CommonRepository.GetConnection() == null)
+            {
+                splashScreenManager1.CloseWaitForm();
+                FormsHelper.ShowStyledMessageBox("Внимание!", "Настройки базы данных не установлены!");
+                return;
+            }
+            if (CommonRepository.CheckConnection() == false)
+            {
+                splashScreenManager1.CloseWaitForm();
+                FormsHelper.ShowStyledMessageBox("Внимание!", "Нет соединения с базой данных!");
+                return;
+            }
+            if (CommonRepository.CheckIfStoredExist() == false)
+            {
+                splashScreenManager1.CloseWaitForm();
+                FormsHelper.ShowStyledMessageBox("Внимание!", "База данных не содержит необходимых хранимых процедур!");
+                return;
+            }
+            splashScreenManager1.CloseWaitForm();
+
         }
     }
 }

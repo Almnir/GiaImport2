@@ -107,7 +107,11 @@ namespace GiaImport2
             "sht_Sheets_AB",
             "sht_Sheets_C",
             "sht_Sheets_D",
-            "sht_Sheets_R"
+            "sht_Sheets_R",
+            "rbd_AuditoriumParallels",
+            "rbd_ExpertParallels",
+            "rbd_StationParallels",
+            "rbd_StationWorkerParallels"
         };
 
         public static List<string> TABLES_NAMES_FOR_DELETE = new List<string>()
@@ -177,7 +181,11 @@ namespace GiaImport2
             "sht_Sheets_AB",
             "sht_Sheets_C",
             "sht_Sheets_D",
-            "sht_Sheets_R"
+            "sht_Sheets_R",
+            "rbd_AuditoriumParallels",
+            "rbd_ExpertParallels",
+            "rbd_StationParallels",
+            "rbd_StationWorkerParallels"
         };
         public static Dictionary<string, string> TABLES_INFO = new Dictionary<string, string>()
         {
@@ -246,7 +254,11 @@ namespace GiaImport2
             { "rbd_ParticipantsExamsOnSchool", "Данные по назначениям на итоговое собеседование участников в ОО." },
             { "rbd_RegionFiles", "Таблица содержит загруженные файлы с рассадкой на ГВЭ." },
             { "rbd_SchoolParticipant", "Таблица содержит данные о привязке участников ГИА к ОО." },
-            { "sht_ExamFinish", "Таблица содержит информацию о завершении обработки экзаменов." }
+            { "sht_ExamFinish", "Таблица содержит информацию о завершении обработки экзаменов." },
+            { "rbd_AuditoriumParallels", "Таблица содержит привязку карточки аудитории к параллели ГИА."},
+            { "rbd_ExpertParallels", "Таблица содержит привязку карточки эксперта к параллели ГИА."},
+            { "rbd_StationParallels", "Таблица содержит привязку карточки ППЭ к параллели ГИА."},
+            { "rbd_StationWorkerParallels", "Таблица содержит привязку карточки работника ППЭ к параллели ГИА."}
         };
 
         public static Dictionary<string, int> DependencyMap = new Dictionary<string, int>
@@ -305,6 +317,9 @@ namespace GiaImport2
             { "rbd_StationWorkersAccreditation", 6 },
             { "rbd_StationWorkersSubjects", 6 },
             { "rbd_StationWorkersPositions", 6 },
+            { "rbd_ExpertParallels", 6 },
+            { "rbd_StationParallels", 6 },
+            { "rbd_StationWorkerParallels", 6 },
             { "rbd_AuditoriumsSubjects", 7 },
             { "rbd_ExpertsExams", 7 },
             { "rbd_ParticipantsExamsOnSchool", 7 },
@@ -314,6 +329,7 @@ namespace GiaImport2
             { "rbd_StationExamAuditory", 7 },
             { "rbd_StationFormAuditoryFields", 7 },
             { "rbd_StationFormFields", 7 },
+            { "rbd_AuditoriumParallels", 7 },
             { "rbd_ParticipantsExamPStation", 8 },
             { "rbd_StationExamAuditoryProps", 8 },
             { "rbd_StationWorkerOnExam", 8 }
