@@ -15,6 +15,11 @@ namespace GiaImport2
         {
             this.Text = title;
         }
+        public void SetTableData(DataTable tableData)
+        {
+            this.ResultGridControl.DataSource = tableData;
+            this.ResultGridControl.Refresh();
+        }
         public void SetTableData(List<TableInfo> tableData)
         {
             DataTable dt = new DataTable();
@@ -34,7 +39,11 @@ namespace GiaImport2
             this.ResultGridControl.DataSource= dt;
             this.ResultGridControl.Refresh();
         }
-
+        public void SetLogData(string logData)
+        {
+            this.ResultEditControl.Text = logData;
+            this.ResultEditControl.Refresh();
+        }
         public void SetLogData(ConcurrentDictionary<string, string> logData)
         {
             if (logData == null || (logData != null && logData.Count == 0))

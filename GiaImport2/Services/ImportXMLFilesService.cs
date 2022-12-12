@@ -12,6 +12,7 @@ using System.Collections;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Data;
+using System.Data.SqlClient;
 using System.IO;
 using System.IO.Compression;
 using System.Linq;
@@ -420,11 +421,11 @@ namespace GiaImport2.Services
         }
         [STAThreadAttribute]
         private void EndVerifier(
-            Task<(ConcurrentDictionary<string, string> verificationErrors, ConcurrentDictionary<string, string> dependencyErrors)> task, 
-            Action closeProgressBar, 
-            ConcurrentDictionary<string, FileInfo> actualCheckedFiles, 
-            RibbonControl ribbonControl, 
-            Action<(List<TableInfo> tableInfos, 
+            Task<(ConcurrentDictionary<string, string> verificationErrors, ConcurrentDictionary<string, string> dependencyErrors)> task,
+            Action closeProgressBar,
+            ConcurrentDictionary<string, FileInfo> actualCheckedFiles,
+            RibbonControl ribbonControl,
+            Action<(List<TableInfo> tableInfos,
                 ConcurrentDictionary<string, string> dependencyErrors)> showResultWindow)
         {
             closeProgressBar();
@@ -610,7 +611,18 @@ namespace GiaImport2.Services
             }
             return fkeysNamesValues;
         }
-        public void ImportFiles(ImportGridPanel importGridPanel, RibbonControl ribbonControl, List<ImportXMLFilesDto> checkedFiles, Action<string> showValidationErrors, Action<(List<TableInfo> tableInfos, ConcurrentDictionary<string, string> dependencyErrors)> showResultWindow)
+        public void ImportFiles(
+            ImportGridPanel importGridPanel,
+            RibbonControl ribbonControl,
+            BulkManager bulkManager,
+            List<ImportXMLFilesDto> checkedFiles,
+            Action showDeleteImport,
+            Action<DeserializeException> deserializeErrorCallback,
+            Action<BulkException> bulkErrorCallback,
+            Action<Exception> exceptionCallback,
+            Action<Dictionary<string, long>> showResultWindow,
+            Action cancelCallback
+            )
         {
             ConcurrentDictionary<string, FileInfo> actualCheckedFiles = new ConcurrentDictionary<string, FileInfo>();
             ILookup<string, FileInfo> fileInfos = LoadedFiles.ToLookup(k => Path.GetFileName(k.Key), k => k.Value);
@@ -685,6 +697,7 @@ namespace GiaImport2.Services
                 Task<ConcurrentDictionary<string, Tuple<string, long, TimeSpan>>> task = Task.Run(() =>
                 RunImport(
                     actualCheckedFiles,
+                    bulkManager,
                     (fileName) =>
                     {
                         if (pbw != null && pbw.IsDisposed != true)
@@ -714,30 +727,34 @@ namespace GiaImport2.Services
                     progressLine,
                     progressTotal,
                     changeProgressLine,
-                    showValidationErrors,
+                    showDeleteImport,
+                    deserializeErrorCallback,
+                    bulkErrorCallback,
+                    cancelCallback,
+                    exceptionCallback,
                     source.Token
                     ), source.Token);
                 task.ContinueWith(taskc =>
                 {
                     if (taskc.Exception == null && taskc.IsFaulted == false && !source.IsCancellationRequested)
                     {
-                        EndImport(taskc,
-                                    () =>
+                        EndImport(
+                            () =>
+                            {
+                                if (pbw != null && pbw.IsDisposed != true)
+                                {
+                                    pbw.Invoke((MethodInvoker)(() =>
                                     {
-                                        if (pbw != null && pbw.IsDisposed != true)
-                                        {
-                                            pbw.Invoke((MethodInvoker)(() =>
-                                            {
-                                                pbw.Close();
-                                            }));
-                                        }
-                                        // включаем кнопки на риббоне
-                                        ribbonControl.Invoke((MethodInvoker)(() =>
-                                        {
-                                            FormsHelper.ToggleRibbonButtonsAll(ribbonControl, true);
-                                        }));
-                                    }
-                                    , actualCheckedFiles, ribbonControl, showResultWindow);
+                                        pbw.Close();
+                                    }));
+                                }
+                                // включаем кнопки на риббоне
+                                ribbonControl.Invoke((MethodInvoker)(() =>
+                                {
+                                    FormsHelper.ToggleRibbonButtonsAll(ribbonControl, true);
+                                }));
+                            },
+                            showResultWindow);
                     }
                 });
             }
@@ -746,35 +763,38 @@ namespace GiaImport2.Services
                 FormsHelper.ShowStyledMessageBox("Ошибка!", "Операция отменена!");
             }
         }
-        private ConcurrentDictionary<string, Tuple<string, long, TimeSpan>> RunImport(
+        public ConcurrentDictionary<string, Tuple<string, long, TimeSpan>> RunImport(
             ConcurrentDictionary<string, FileInfo> actualCheckedFiles,
+            BulkManager bm,
             Action<string> addFileToView,
             Action closeProgressBar,
             IProgress<int> progressLine,
             IProgress<int> progressTotal,
             Action changeProgressLine,
-            Action<string> showValidationErrors,
+            Action showDeleteImport,
+            Action<DeserializeException> deserializeErrorCallback,
+            Action<BulkException> bulkErrorCallback,
+            Action cancelCallback,
+            Action<Exception> exceptionCallback,
             CancellationToken token)
         {
-            BulkManager bm = Container.GetInstance<BulkManager>();
             this.ImportStatistics.Clear();
             ConcurrentDictionary<string, Tuple<string, long, TimeSpan>> importStatus = new ConcurrentDictionary<string, Tuple<string, long, TimeSpan>>();
             try
             {
                 int i = 0;
+                int progressTotalCount = 0;
                 for (; i <= actualCheckedFiles.Count - 1; i++)
                 {
                     progressLine.Report(i);
                     token.ThrowIfCancellationRequested();
-                    string tableName = Globals.TABLES_NAMES.Where(x=>x.Contains(actualCheckedFiles.ElementAt(i).Value.Name)).First();
+                    string tableName = Globals.TABLES_NAMES.Where(x => x.Contains(actualCheckedFiles.ElementAt(i).Value.Name)).First();
                     string xmlFilePath = actualCheckedFiles.ElementAt(i).Key;
-                    addFileToView(tableName);
                     changeProgressLine();
                     // если нет в статистике, то считаем элементы и добавляем (это чтобы не считалось заново для кусков)
                     if (!ImportStatistics.ContainsKey(tableName))
                     {
-                        string uncutXmlFilePath = GetUncutFilePath(tableName);
-                        long countElements = PreparationStage.GetElementsCount(uncutXmlFilePath, "ns1:" + tableName);
+                        long countElements = GetElementsCount(xmlFilePath, "ns1:" + tableName);
                         ImportStatistics.Add(tableName, countElements);
                     }
                     bm.BulkStartNew(tableName, xmlFilePath, (e, v) =>
@@ -783,151 +803,90 @@ namespace GiaImport2.Services
                         try
                         {
                             token.ThrowIfCancellationRequested();
-                            if (!plabel.IsDisposed && !token.IsCancellationRequested)
-                            {
-                                plabel.Invoke((MethodInvoker)(() => plabel.Text = string.Format("{0}", tableName)));
-                            }
+                            addFileToView(tableName);
                         }
                         catch (OperationCanceledException)
                         {
-                            if (!pbw.IsDisposed)
-                            {
-                                Invoke(new Action(() => { pbw.Close(); }));
-                            }
-                            if (Globals.frmSettings.PuraSurEraro)
-                            {
-                                Invoke(new Action(() => { MessageBox.Show("Выполнение прервано! \n Будет произведена очистка временных таблиц!"); }));
-                                DatabaseHelper.DeleteLoaderTables(Globals.GetConnectionString());
-                                Invoke(new Action(() => { MessageBox.Show("Очистка временных таблиц завершена!"); }));
-                            }
-                            else
-                            {
-                                Invoke(new Action(() => { MessageBox.Show("Выполнение прервано!"); }));
-                            }
-                            //log.Info(string.Format("{0} была остановлена...", JobName()));
-                            EnableButtons();
-                            if (!this.IsDisposed)
-                            {
-                                Invoke(new Action(() => { this.Focus(); }));
-                            }
+                            closeProgressBar();
+                            showDeleteImport();
                         }
                     }
                     , importStatus);
-                    pbarLine.Invoke((MethodInvoker)(() =>
-                    {
-                        pbarLine.Style = ProgressBarStyle.Continuous;
-                        pbarLine.MarqueeAnimationSpeed = 0;
-                    }));
                 }
-                progress.Report(i);
-                if (!plabel.IsDisposed)
-                {
-                    plabel.Invoke((MethodInvoker)(() => plabel.Text = "Табличное преобразование..."));
-                }
-                pbarLine.Invoke((MethodInvoker)(() =>
-                {
-                    pbarLine.Style = ProgressBarStyle.Marquee;
-                    pbarLine.MarqueeAnimationSpeed = 30;
-                    pbarLine.Visible = true;
-                }));
-
+                // меняем тип прогрессбара
+                //if (!plabel.IsDisposed)
+                //{
+                //    plabel.Invoke((MethodInvoker)(() => plabel.Text = "Табличное преобразование..."));
+                //}
+                changeProgressLine();
+                // передвигаем общий прогресс
+                progressTotal.Report(progressTotalCount);
                 // TODO: !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
                 bm.RunStoredSynchronize();
                 // TODO: !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-
                 DataStatTable = bm.PrepareStatistics(ImportStatistics);
+                // удаляем временные таблицы
                 if (Globals.frmSettings.PuraSurEraro)
                 {
-                    DatabaseHelper.DeleteLoaderTables(Globals.GetConnectionString());
+                    CommonRepository.DeleteLoaderTables();
                 }
-                pbarLine.Invoke((MethodInvoker)(() =>
-                {
-                    pbarLine.Style = ProgressBarStyle.Continuous;
-                    pbarLine.MarqueeAnimationSpeed = 0;
-                }));
             }
             catch (DeserializeException de)
             {
-                ConcurrentDictionary<string, Tuple<string, long, TimeSpan>> errord = de.errorDict;
-                StringBuilder sb = new StringBuilder();
-                foreach (var item in de.errorDict)
-                {
-                    sb.Append(item.Value.Item1);
-                }
-                Invoke(new Action(() => { MessageShowControl.ShowImportErrors(sb.ToString()); }));
-                EnableButtons();
-                if (!this.IsDisposed)
-                {
-                    Invoke(new Action(() => { this.Focus(); }));
-                }
+                closeProgressBar();
+                deserializeErrorCallback(de);
             }
             catch (BulkException be)
             {
-                if (!pbw.IsDisposed)
-                {
-                    Invoke(new Action(() => { pbw.Close(); }));
-                }
-                ConcurrentDictionary<string, Tuple<string, long, TimeSpan>> errord = be.errorDict;
-                StringBuilder sb = new StringBuilder();
-                foreach (var item in be.errorDict)
-                {
-                    sb.Append(item.Value.Item1);
-                }
-                Invoke(new Action(() => { MessageShowControl.ShowImportErrors(sb.ToString()); }));
-                EnableButtons();
-                if (!this.IsDisposed)
-                {
-                    Invoke(new Action(() => { this.Focus(); }));
-                }
+                closeProgressBar();
+                bulkErrorCallback(be);
             }
             catch (OperationCanceledException)
             {
-                if (!pbw.IsDisposed)
+                closeProgressBar();
+                cancelCallback();
+            }
+            catch (Exception ex)
+            {
+                closeProgressBar();
+                exceptionCallback(ex);
+            }
+            return bm.errorDict;
+        }
+
+        /// <summary>
+        /// Подсчёт количества элементов
+        /// </summary>
+        /// <param name="filename"></param>
+        /// <param name="element"></param>
+        /// <param name="errorString"></param>
+        /// <returns></returns>
+        public long GetElementsCount(string filename, string element)
+        {
+            long countElements = 0;
+            try
+            {
+                using (XmlReader reader = XmlReader.Create(filename))
                 {
-                    Invoke(new Action(() => { pbw.Close(); }));
-                }
-                if (Globals.frmSettings.PuraSurEraro)
-                {
-                    Invoke(new Action(() => { MessageBox.Show("Прервано пользователем! \n Будет произведена очистка временных таблиц!"); }));
-                    DatabaseHelper.DeleteLoaderTables(Globals.GetConnectionString());
-                    Invoke(new Action(() => { MessageBox.Show("Очистка временных таблиц завершена!"); }));
-                }
-                else
-                {
-                    Invoke(new Action(() => { MessageBox.Show("Прервано пользователем!"); }));
-                }
-                //log.Info(string.Format("{0} была остановлена...", JobName()));
-                if (!pbw.IsDisposed)
-                {
-                    Invoke(new Action(() => { pbw.Close(); }));
-                }
-                EnableButtons();
-                if (!this.IsDisposed)
-                {
-                    Invoke(new Action(() => { this.Focus(); }));
+                    while (reader.ReadToFollowing(element))
+                    {
+                        countElements += 1;
+                    }
                 }
             }
             catch (Exception ex)
             {
-                log.Error(ex.ToString());
-                Invoke(new Action(() => { pbw.Close(); }));
-                Invoke(new Action(() => { MessageShowControl.ShowImportErrors(ex.ToString()); }));
-                EnableButtons();
-                if (!this.IsDisposed)
-                {
-                    Invoke(new Action(() => { this.Focus(); }));
-                }
+                string errorStr = string.Format("При чтении xml файла {0} произошла ошибка {1}.", filename, ex.ToString());
+                CommonRepository.GetLogger().Error(errorStr);
+                throw new Exception(errorStr);
             }
-            return bm.errorDict;
+            return countElements;
         }
-        private void EndImport(
-            Task<ConcurrentDictionary<string, Tuple<string, long, TimeSpan>>> taskc,
-            Action closeProgressBar,
-            ConcurrentDictionary<string, FileInfo> actualCheckedFiles, 
-            RibbonControl ribbonControl, 
-            Action<(List<TableInfo> tableInfos, ConcurrentDictionary<string, string> dependencyErrors)> showResultWindow)
+
+        private void EndImport(Action closeProgressBar,Action<Dictionary<string, long>> showResultWindow)
         {
-            throw new NotImplementedException();
+            closeProgressBar();
+            showResultWindow(ImportStatistics);
         }
     }
 }

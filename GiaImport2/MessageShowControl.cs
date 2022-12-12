@@ -27,5 +27,13 @@ namespace GiaImport2
             frm.SetExtendedContent(v.ToString());
             frm.ShowDialog();
         }
+
+        internal static void ShowImportErrors(string v)
+        {
+            MessageForm frm = new MessageForm();
+            frm.SetTitle("Ошибки импорта");
+            frm.SetExtendedContent(v.ToString());
+            frm.ShowDialog();
+        }
     }
 }

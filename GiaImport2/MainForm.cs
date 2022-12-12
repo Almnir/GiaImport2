@@ -1,21 +1,17 @@
 ﻿using DevExpress.Data;
-using DevExpress.Utils.Extensions;
 using DevExpress.XtraBars;
 using DevExpress.XtraEditors;
-using DevExpress.XtraExport.Helpers;
 using DevExpress.XtraGrid;
-using DevExpress.XtraGrid.Views.Grid;
 using GiaImport2.Models;
 using GiaImport2.Services;
-using MFtcUtils.Helpers;
 using NLog.Fluent;
 using SimpleInjector;
 using System;
-using System.Collections;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
-using System.Data;
 using System.IO;
 using System.Linq;
+using System.Text;
 using System.Threading;
 using System.Windows.Forms;
 
@@ -214,7 +210,7 @@ namespace GiaImport2
                 GridColumnSummaryItem siTotal = new GridColumnSummaryItem();
                 siTotal.SummaryType = SummaryItemType.Count;
                 siTotal.DisplayFormat = "Всего: {0}";
-                siTotal.FieldName= "CreationTime";
+                siTotal.FieldName = "CreationTime";
                 ImportGridPanel.GetImportGridPanelView().Columns["CreationTime"].Summary.Add(siTotal);
                 // распаковать выбранный архив во временный каталог
                 ImportXMLFilesService.UnpackFiles(openFileDialog.FileName, ribbonControl1,
@@ -328,7 +324,7 @@ namespace GiaImport2
                     (tableinfosErrors) =>
                     {
                         Invoke((MethodInvoker)(() =>
-                        { 
+                        {
                             ResultWindowWithLog rw = new ResultWindowWithLog();
                             rw.SetTitle("Итого");
                             rw.SetTableData(tableinfosErrors.tableInfos);
@@ -382,7 +378,144 @@ namespace GiaImport2
                 return;
             }
             splashScreenManager1.CloseWaitForm();
-
+            // выключаем кнопки на риббоне
+            ribbonControl1.Invoke((MethodInvoker)(() =>
+            {
+                FormsHelper.ToggleRibbonButtonsAll(ribbonControl1, false);
+            }));
+            BulkManager bm = DIContainer.GetInstance<BulkManager>();
+            ImportXMLFilesService.ImportFiles(this.ImportGridPanel, ribbonControl1, bm,checkedFiles,
+                () =>
+                {
+                    if (Globals.frmSettings.PuraSurEraro)
+                    {
+                        Invoke(new Action(() =>
+                        {
+                            FormsHelper.ShowStyledMessageBox("Внимание!", "Выполнение прервано! \n Будет произведена очистка временных таблиц!");
+                        }));
+                        CommonRepository.DeleteLoaderTables();
+                        Invoke(new Action(() =>
+                        {
+                            FormsHelper.ShowStyledMessageBox("Внимание!", "Очистка временных таблиц завершена!");
+                        }));
+                    }
+                    else
+                    {
+                        Invoke(new Action(() =>
+                        {
+                            FormsHelper.ShowStyledMessageBox("Внимание!", "Выполнение прервано!");
+                        }));
+                    }
+                    // включаем кнопки на риббоне
+                    ribbonControl1.Invoke((MethodInvoker)(() =>
+                    {
+                        FormsHelper.ToggleRibbonButtonsAll(ribbonControl1, true);
+                    }));
+                    if (!this.IsDisposed)
+                    {
+                        Invoke(new Action(() => { this.Focus(); }));
+                    }
+                },
+                (deserializeException) =>
+                {
+                    ConcurrentDictionary<string, Tuple<string, long, TimeSpan>> errord = deserializeException.errorDict;
+                    StringBuilder sb = new StringBuilder();
+                    foreach (var item in deserializeException.errorDict)
+                    {
+                        sb.Append(item.Value.Item1);
+                    }
+                    Invoke(new Action(() => { MessageShowControl.ShowImportErrors(sb.ToString()); }));
+                    // включаем кнопки на риббоне
+                    ribbonControl1.Invoke((MethodInvoker)(() =>
+                    {
+                        FormsHelper.ToggleRibbonButtonsAll(ribbonControl1, true);
+                    }));
+                    if (!this.IsDisposed)
+                    {
+                        Invoke(new Action(() => { this.Focus(); }));
+                    }
+                },
+                (bulkException) =>
+                {
+                    ConcurrentDictionary<string, Tuple<string, long, TimeSpan>> errord = bulkException.errorDict;
+                    StringBuilder sb = new StringBuilder();
+                    foreach (var item in bulkException.errorDict)
+                    {
+                        sb.Append(item.Value.Item1);
+                    }
+                    Invoke(new Action(() => { MessageShowControl.ShowImportErrors(sb.ToString()); }));
+                    // включаем кнопки на риббоне
+                    ribbonControl1.Invoke((MethodInvoker)(() =>
+                    {
+                        FormsHelper.ToggleRibbonButtonsAll(ribbonControl1, true);
+                    }));
+                    if (!this.IsDisposed)
+                    {
+                        Invoke(new Action(() => { this.Focus(); }));
+                    }
+                },
+                (exception) =>
+                {
+                    CommonRepository.GetLogger().Error(exception.ToString());
+                    Invoke(new Action(() => { MessageShowControl.ShowImportErrors(exception.ToString()); }));
+                    // включаем кнопки на риббоне
+                    ribbonControl1.Invoke((MethodInvoker)(() =>
+                    {
+                        FormsHelper.ToggleRibbonButtonsAll(ribbonControl1, true);
+                    }));
+                    if (!this.IsDisposed)
+                    {
+                        Invoke(new Action(() => { this.Focus(); }));
+                    }
+                },
+                (importStatistics) =>
+                {
+                    Invoke(new Action(() =>
+                    {
+                        string statiscticsall = bm.outLog.ToString();
+                        CommonRepository.GetLogger().Info(statiscticsall);
+                        var dataStatTable = bm.PrepareStatistics(importStatistics);
+                        ResultWindowWithLog rw = new ResultWindowWithLog();
+                        rw.SetTableData(dataStatTable);
+                        rw.SetLogData(statiscticsall);
+                        rw.Focus();
+                        rw.ShowDialog();
+                    }));
+                    Invoke(new Action(() =>
+                    {
+                        this.Focus();
+                    }));
+                }
+                ,
+                () =>
+                {
+                    if (Globals.frmSettings.PuraSurEraro)
+                    {
+                        Invoke(new Action(() => {
+                            FormsHelper.ShowStyledMessageBox("Внимание!", "Прервано пользователем! \n Будет произведена очистка временных таблиц!");
+                        }));
+                        CommonRepository.DeleteLoaderTables();
+                        Invoke(new Action(() => {
+                            FormsHelper.ShowStyledMessageBox("Внимание!", "Очистка временных таблиц завершена!");
+                        }));
+                    }
+                    else
+                    {
+                        Invoke(new Action(() => {
+                            FormsHelper.ShowStyledMessageBox("Внимание!", "Прервано пользователем!");
+                        }));
+                    }
+                    // включаем кнопки на риббоне
+                    ribbonControl1.Invoke((MethodInvoker)(() =>
+                    {
+                        FormsHelper.ToggleRibbonButtonsAll(ribbonControl1, true);
+                    }));
+                    if (!this.IsDisposed)
+                    {
+                        Invoke(new Action(() => { this.Focus(); }));
+                    }
+                }
+             );
         }
     }
 }

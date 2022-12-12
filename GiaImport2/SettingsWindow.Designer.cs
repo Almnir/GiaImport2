@@ -40,11 +40,11 @@ namespace GiaImport2
             this.labelControl2 = new DevExpress.XtraEditors.LabelControl();
             this.labelControl1 = new DevExpress.XtraEditors.LabelControl();
             this.groupControl2 = new DevExpress.XtraEditors.GroupControl();
-            this.OkButton = new DevExpress.XtraEditors.SimpleButton();
-            this.CancelSettingsButton = new DevExpress.XtraEditors.SimpleButton();
+            this.CleanOnExceptionEdit = new DevExpress.XtraEditors.CheckEdit();
             this.TempFolderLabel = new DevExpress.XtraEditors.LabelControl();
             this.TmpFolderEdit = new DevExpress.XtraEditors.ButtonEdit();
-            this.CleanOnExceptionEdit = new DevExpress.XtraEditors.CheckEdit();
+            this.OkButton = new DevExpress.XtraEditors.SimpleButton();
+            this.CancelSettingsButton = new DevExpress.XtraEditors.SimpleButton();
             ((System.ComponentModel.ISupportInitialize)(this.groupControl1)).BeginInit();
             this.groupControl1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.PasswordText.Properties)).BeginInit();
@@ -53,8 +53,8 @@ namespace GiaImport2
             ((System.ComponentModel.ISupportInitialize)(this.ServerText.Properties)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.groupControl2)).BeginInit();
             this.groupControl2.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.TmpFolderEdit.Properties)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.CleanOnExceptionEdit.Properties)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.TmpFolderEdit.Properties)).BeginInit();
             this.SuspendLayout();
             // 
             // groupControl1
@@ -158,23 +158,13 @@ namespace GiaImport2
             this.groupControl2.TabIndex = 1;
             this.groupControl2.Text = "Прочие настройки";
             // 
-            // OkButton
+            // CleanOnExceptionEdit
             // 
-            this.OkButton.Location = new System.Drawing.Point(141, 260);
-            this.OkButton.Name = "OkButton";
-            this.OkButton.Size = new System.Drawing.Size(75, 23);
-            this.OkButton.TabIndex = 2;
-            this.OkButton.Text = "Применить";
-            this.OkButton.Click += new System.EventHandler(this.OkButton_Click);
-            // 
-            // CancelSettingsButton
-            // 
-            this.CancelSettingsButton.Location = new System.Drawing.Point(361, 260);
-            this.CancelSettingsButton.Name = "CancelSettingsButton";
-            this.CancelSettingsButton.Size = new System.Drawing.Size(75, 23);
-            this.CancelSettingsButton.TabIndex = 3;
-            this.CancelSettingsButton.Text = "Отменить";
-            this.CancelSettingsButton.Click += new System.EventHandler(this.CancelButton_Click);
+            this.CleanOnExceptionEdit.Location = new System.Drawing.Point(6, 44);
+            this.CleanOnExceptionEdit.Name = "CleanOnExceptionEdit";
+            this.CleanOnExceptionEdit.Properties.Caption = "Очищать временные таблицы при ошибке";
+            this.CleanOnExceptionEdit.Size = new System.Drawing.Size(240, 19);
+            this.CleanOnExceptionEdit.TabIndex = 10;
             // 
             // TempFolderLabel
             // 
@@ -192,18 +182,27 @@ namespace GiaImport2
             new DevExpress.XtraEditors.Controls.EditorButton()});
             this.TmpFolderEdit.Properties.LookAndFeel.SkinName = "Office 2013 Light Gray";
             this.TmpFolderEdit.Properties.LookAndFeel.UseDefaultLookAndFeel = false;
-            this.TmpFolderEdit.Properties.PasswordChar = '*';
-            this.TmpFolderEdit.Properties.UseSystemPasswordChar = true;
             this.TmpFolderEdit.Size = new System.Drawing.Size(426, 20);
             this.TmpFolderEdit.TabIndex = 9;
+            this.TmpFolderEdit.ButtonClick += new DevExpress.XtraEditors.Controls.ButtonPressedEventHandler(this.TmpFolderEdit_ButtonClick);
             // 
-            // CleanOnExceptionEdit
+            // OkButton
             // 
-            this.CleanOnExceptionEdit.Location = new System.Drawing.Point(6, 44);
-            this.CleanOnExceptionEdit.Name = "CleanOnExceptionEdit";
-            this.CleanOnExceptionEdit.Properties.Caption = "Очищать временные таблицы при ошибке";
-            this.CleanOnExceptionEdit.Size = new System.Drawing.Size(240, 19);
-            this.CleanOnExceptionEdit.TabIndex = 10;
+            this.OkButton.Location = new System.Drawing.Point(141, 260);
+            this.OkButton.Name = "OkButton";
+            this.OkButton.Size = new System.Drawing.Size(75, 23);
+            this.OkButton.TabIndex = 2;
+            this.OkButton.Text = "Применить";
+            this.OkButton.Click += new System.EventHandler(this.OkButton_Click);
+            // 
+            // CancelSettingsButton
+            // 
+            this.CancelSettingsButton.Location = new System.Drawing.Point(361, 260);
+            this.CancelSettingsButton.Name = "CancelSettingsButton";
+            this.CancelSettingsButton.Size = new System.Drawing.Size(75, 23);
+            this.CancelSettingsButton.TabIndex = 3;
+            this.CancelSettingsButton.Text = "Отменить";
+            this.CancelSettingsButton.Click += new System.EventHandler(this.CancelButton_Click);
             // 
             // SettingsWindow
             // 
@@ -229,8 +228,8 @@ namespace GiaImport2
             ((System.ComponentModel.ISupportInitialize)(this.groupControl2)).EndInit();
             this.groupControl2.ResumeLayout(false);
             this.groupControl2.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.TmpFolderEdit.Properties)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.CleanOnExceptionEdit.Properties)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.TmpFolderEdit.Properties)).EndInit();
             this.ResumeLayout(false);
 
         }

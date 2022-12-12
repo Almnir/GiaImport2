@@ -20,7 +20,7 @@ using System.Xml.Linq;
 
 namespace GiaImport2.Services
 {
-    class BulkManager
+    public class BulkManager
     {
 
         public ConcurrentDictionary<string, Tuple<string, long, TimeSpan>> errorDict = new ConcurrentDictionary<string, Tuple<string, long, TimeSpan>>();

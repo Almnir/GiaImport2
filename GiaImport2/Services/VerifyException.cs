@@ -5,7 +5,7 @@ using System.Runtime.Serialization;
 namespace GiaImport2.Services
 {
     [Serializable]
-    internal class VerifyException : Exception
+    public class VerifyException : Exception
     {
         public ConcurrentDictionary<string, string> errorDict;
 

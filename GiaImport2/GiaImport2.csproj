@@ -268,7 +268,9 @@
     <Compile Include="ResultWindowWithLog.Designer.cs">
       <DependentUpon>ResultWindowWithLog.cs</DependentUpon>
     </Compile>
+    <Compile Include="Services\BulkException.cs" />
     <Compile Include="Services\BulkManager.cs" />
+    <Compile Include="Services\DeserializeException.cs" />
     <Compile Include="Services\ExportFinalInterviewService.cs" />
     <Compile Include="Enumerations\FilesInfoStats.cs" />
     <Compile Include="Services\IGlobals.cs" />

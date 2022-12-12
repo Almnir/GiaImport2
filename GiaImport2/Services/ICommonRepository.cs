@@ -24,5 +24,6 @@ namespace GiaImport2.Services
         void RunDeleteSynchronize(int tableGroup);
         bool IsDataTableExists(string schemaName, string tableName);
         bool CheckIfStoredExist();
+        void DeleteLoaderTables();
     }
 }

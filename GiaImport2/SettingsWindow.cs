@@ -1,4 +1,5 @@
 ﻿using AdysTech.CredentialManager;
+using DevExpress.XtraEditors;
 using GiaImport2.Services;
 using System;
 using System.Collections.Generic;
@@ -28,17 +29,24 @@ namespace GiaImport2
         private void CheckConnectionButton_Click(object sender, EventArgs e)
         {
             //FormsHelper.ShowStyledMessageBox("ee", this.CommonRepository.GetCurrentScheme().Version);
+            if (CommonRepository.CheckConnection())
+            {
+                FormsHelper.ShowStyledMessageBox("Проверено", "Соединение успешно!");
+            }
+            else
+            {
+                FormsHelper.ShowStyledMessageBox("Внимание!", "Нет соединения!");
+            }
         }
-
         private void SettingsWindow_Load(object sender, EventArgs e)
         {
             var credentials = CommonRepository.GetCredentials();
-            if (credentials.Item1 != null)
+            if (credentials.UserName != null)
             {
-                LoginText.Text = credentials.Item1;
-                PasswordText.Text = credentials.Item2;
-                ServerText.Text = credentials.Item3;
-                DatabaseText.Text = credentials.Item4;
+                LoginText.Text = credentials.UserName;
+                PasswordText.Text = credentials.Password;
+                ServerText.Text = credentials.ServerName;
+                DatabaseText.Text = credentials.Database;
             }
             // загрузка из формсеттингов
             if (string.IsNullOrWhiteSpace(Globals.frmSettings.TempDirectoryText ?? ""))
@@ -92,6 +100,21 @@ namespace GiaImport2
 
             Globals.frmSettings.Save();
             this.Close();
+        }
+
+        private void TmpFolderEdit_ButtonClick(object sender, DevExpress.XtraEditors.Controls.ButtonPressedEventArgs e)
+        {
+            XtraFolderBrowserDialog openDialog = new XtraFolderBrowserDialog();
+            DialogResult userClicked = openDialog.ShowDialog();
+            if (userClicked == DialogResult.Cancel)
+            {
+                return;
+            }
+            if (userClicked == DialogResult.OK)
+            {
+                this.TmpFolderEdit.Text = openDialog.SelectedPath;
+                this.TmpFolderEdit.ScrollToCaret();
+            }
         }
     }
 
