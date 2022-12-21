@@ -61,7 +61,7 @@ namespace GiaImport2.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
         public bool PuraSurEraroAktivigi {
             get {
                 return ((bool)(this["PuraSurEraroAktivigi"]));

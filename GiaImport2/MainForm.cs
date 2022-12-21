@@ -1,7 +1,9 @@
 ﻿using DevExpress.Data;
 using DevExpress.XtraBars;
+using DevExpress.XtraBars.Ribbon;
 using DevExpress.XtraEditors;
 using DevExpress.XtraGrid;
+using DevExpress.XtraRichEdit.Fields.Expression;
 using GiaImport2.Models;
 using GiaImport2.Services;
 using NLog.Fluent;
@@ -11,7 +13,9 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading;
 using System.Windows.Forms;
 
@@ -25,6 +29,8 @@ namespace GiaImport2
         private readonly IImportXMLFilesService ImportXMLFilesService;
         ImportGridPanel ImportGridPanel;
 
+        Dictionary<string, FileInfo> LoadedFiles = new Dictionary<string, FileInfo>();
+
         public MainForm(Container container, ICommonRepository commonRepository, IInterviewRepository interviewRepository, IImportXMLFilesService importXMLFilesService)
         {
             InitializeComponent();
@@ -37,11 +43,88 @@ namespace GiaImport2
 
         private void MainForm_Load(object sender, EventArgs e)
         {
+            // фоновая панель
             BackgroundPanel backgroundPanel = new BackgroundPanel();
             backgroundPanel.Dock = DockStyle.Fill;
             MainPanel.Controls.Add(backgroundPanel);
+            // проверяем, какие странички риббона включить
             var dataBase = CommonRepository.GetCredentials().Database;
             var serverName = CommonRepository.GetCredentials().ServerName;
+            RibbonPage page = ribbonControl1.Pages.GetPageByText("Итоговое собеседование");
+            page.Visible = false;
+            page = ribbonControl1.Pages.GetPageByText("Импорт XML");
+            page.Visible = false;
+            if (Properties.Settings.Default.Importado == true)
+            {
+                page = ribbonControl1.Pages.GetPageByText("Импорт XML");
+                page.Visible = true;
+                ribbonControl1.SelectedPage = page;
+            }
+            if (Properties.Settings.Default.Intervjuo == true)
+            {
+                page = ribbonControl1.Pages.GetPageByText("Итоговое собеседование");
+                page.Visible = true;
+                ribbonControl1.SelectedPage = page;
+            }
+            if (string.IsNullOrEmpty(dataBase) || string.IsNullOrEmpty(serverName))
+            {
+                SettingsWindow settingsWindow = DIContainer.GetInstance<SettingsWindow>();
+                DialogResult resdlg = settingsWindow.ShowDialog();
+                if (resdlg == DialogResult.OK)
+                {
+                    string error = "";
+                    // сверка версий с базой
+                    if (CommonRepository.TryCheckVersion(Assembly.GetExecutingAssembly().GetName().Version, Properties.Settings.Default.Importado, Properties.Settings.Default.Intervjuo, out error) == false)
+                    {
+                        FormsHelper.ShowStyledMessageBox("Ошибка!", error);
+                    }
+                }
+            }
+            if (!CommonRepository.CheckDBVersion(dataBase))
+            {
+                FormsHelper.ShowStyledMessageBox("Внимание!", "Версия БД не соответствует действующей!");
+                SettingsWindow settingsWindow = DIContainer.GetInstance<SettingsWindow>();
+                DialogResult resdlg = settingsWindow.ShowDialog();
+                if (resdlg != DialogResult.OK)
+                {
+                    Application.Exit();
+                }
+            }
+            string regexPattern = @"_\d+.*$";
+            Regex regex = new Regex(regexPattern, RegexOptions.IgnoreCase);
+            if (Directory.Exists(Globals.frmSettings.TempDirectoryText == null ?
+                Path.Combine(Path.GetTempPath(), "Tempdir") : Path.Combine(Globals.frmSettings.TempDirectoryText, "Tempdir")))
+            {
+                var files = Directory.GetFiles(Globals.frmSettings.TempDirectoryText == null ?
+                    Path.Combine(Path.GetTempPath(), "Tempdir") : Path.Combine(Globals.frmSettings.TempDirectoryText, "Tempdir"));
+                // если найдены уже загруженные файлы Импорта
+                if (files != null && files.Count() > 0)
+                {
+                    // Добавляем панель
+                    System.ComponentModel.BindingList<ImportXMLFilesDto> importViews = CreatePanelAndGetBinding();
+                    foreach (var file in files)
+                    {
+                        FileInfo fi = new FileInfo(file);
+                        string fname = Path.GetFileNameWithoutExtension(file);
+                        if (!LoadedFiles.Keys.Contains(file) && !LoadedFiles.Values.Contains(fi) && !regex.IsMatch(fname))
+                        {
+                            LoadedFiles.Add(file, fi);
+                            var ixf = new ImportXMLFilesDto
+                            {
+                                Name = fi.Name,
+                                CreationTime = fi.CreationTime,
+                                Length = fi.Length
+                            };
+                            ImportGridPanel.GetImportGridPanelGrid().Invoke((MethodInvoker)(() =>
+                            {
+                                importViews.Add(ixf);
+                                ImportGridPanel.GetImportGridPanelGrid().Refresh();
+                            }));
+                        }
+                    }
+                }
+            }
+
             if (!string.IsNullOrEmpty(dataBase) && !string.IsNullOrEmpty(serverName))
             {
                 this.barStaticItem1.Caption = $"{serverName}/{dataBase}";
@@ -50,7 +133,9 @@ namespace GiaImport2
             {
                 this.barStaticItem1.Caption = "";
             }
-
+            // показываем версию
+            string version = Assembly.GetExecutingAssembly().GetName().Version.ToString();
+            Text += " v" + version;
         }
 
         private async void ExportInterviewButton_ItemClick(object sender, DevExpress.XtraBars.ItemClickEventArgs e)
@@ -201,17 +286,7 @@ namespace GiaImport2
                 // очистить временный каталог
                 ImportXMLFilesService.ClearFiles();
                 // Добавляем панель
-                ImportGridPanel = new ImportGridPanel();
-                ImportGridPanel.Dock = DockStyle.Fill;
-                MainPanel.Controls.Clear();
-                MainPanel.Controls.Add(ImportGridPanel);
-                System.ComponentModel.BindingList<ImportXMLFilesDto> importViews = new System.ComponentModel.BindingList<ImportXMLFilesDto>();
-                ImportGridPanel.GetImportGridPanelGrid().DataSource = importViews;
-                GridColumnSummaryItem siTotal = new GridColumnSummaryItem();
-                siTotal.SummaryType = SummaryItemType.Count;
-                siTotal.DisplayFormat = "Всего: {0}";
-                siTotal.FieldName = "CreationTime";
-                ImportGridPanel.GetImportGridPanelView().Columns["CreationTime"].Summary.Add(siTotal);
+                System.ComponentModel.BindingList<ImportXMLFilesDto> importViews = CreatePanelAndGetBinding();
                 // распаковать выбранный архив во временный каталог
                 ImportXMLFilesService.UnpackFiles(openFileDialog.FileName, ribbonControl1,
                     (filedto) =>
@@ -228,6 +303,22 @@ namespace GiaImport2
                 Globals.frmSettings.Save();
             }
 
+        }
+
+        private System.ComponentModel.BindingList<ImportXMLFilesDto> CreatePanelAndGetBinding()
+        {
+            ImportGridPanel = new ImportGridPanel();
+            ImportGridPanel.Dock = DockStyle.Fill;
+            MainPanel.Controls.Clear();
+            MainPanel.Controls.Add(ImportGridPanel);
+            System.ComponentModel.BindingList<ImportXMLFilesDto> importViews = new System.ComponentModel.BindingList<ImportXMLFilesDto>();
+            ImportGridPanel.GetImportGridPanelGrid().DataSource = importViews;
+            GridColumnSummaryItem siTotal = new GridColumnSummaryItem();
+            siTotal.SummaryType = SummaryItemType.Count;
+            siTotal.DisplayFormat = "Всего: {0}";
+            siTotal.FieldName = "CreationTime";
+            ImportGridPanel.GetImportGridPanelView().Columns["CreationTime"].Summary.Add(siTotal);
+            return importViews;
         }
 
         private void ImportInterviewButton_ItemClick(object sender, ItemClickEventArgs e)

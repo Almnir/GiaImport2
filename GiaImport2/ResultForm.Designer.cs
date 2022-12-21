@@ -28,12 +28,13 @@
         /// </summary>
         private void InitializeComponent()
         {
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(ResultForm));
             this.layoutControl1 = new DevExpress.XtraLayout.LayoutControl();
+            this.OKButton = new DevExpress.XtraEditors.SimpleButton();
             this.ResultPanelControl = new DevExpress.XtraEditors.PanelControl();
             this.Root = new DevExpress.XtraLayout.LayoutControlGroup();
             this.layoutControlItem1 = new DevExpress.XtraLayout.LayoutControlItem();
             this.simpleSeparator1 = new DevExpress.XtraLayout.SimpleSeparator();
-            this.OKButton = new DevExpress.XtraEditors.SimpleButton();
             this.layoutControlItem2 = new DevExpress.XtraLayout.LayoutControlItem();
             ((System.ComponentModel.ISupportInitialize)(this.layoutControl1)).BeginInit();
             this.layoutControl1.SuspendLayout();
@@ -56,6 +57,15 @@
             this.layoutControl1.Size = new System.Drawing.Size(752, 439);
             this.layoutControl1.TabIndex = 0;
             this.layoutControl1.Text = "layoutControl1";
+            // 
+            // OKButton
+            // 
+            this.OKButton.Location = new System.Drawing.Point(12, 405);
+            this.OKButton.Name = "OKButton";
+            this.OKButton.Size = new System.Drawing.Size(728, 22);
+            this.OKButton.StyleController = this.layoutControl1;
+            this.OKButton.TabIndex = 5;
+            this.OKButton.Text = "Понятно";
             // 
             // ResultPanelControl
             // 
@@ -92,15 +102,6 @@
             this.simpleSeparator1.Name = "simpleSeparator1";
             this.simpleSeparator1.Size = new System.Drawing.Size(732, 1);
             // 
-            // OKButton
-            // 
-            this.OKButton.Location = new System.Drawing.Point(12, 405);
-            this.OKButton.Name = "OKButton";
-            this.OKButton.Size = new System.Drawing.Size(728, 22);
-            this.OKButton.StyleController = this.layoutControl1;
-            this.OKButton.TabIndex = 5;
-            this.OKButton.Text = "Понятно";
-            // 
             // layoutControlItem2
             // 
             this.layoutControlItem2.Control = this.OKButton;
@@ -116,6 +117,7 @@
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(752, 439);
             this.Controls.Add(this.layoutControl1);
+            this.IconOptions.SvgImage = ((DevExpress.Utils.Svg.SvgImage)(resources.GetObject("ResultForm.IconOptions.SvgImage")));
             this.Name = "ResultForm";
             this.Text = "ResultForm";
             ((System.ComponentModel.ISupportInitialize)(this.layoutControl1)).EndInit();

@@ -28,7 +28,6 @@ namespace GiaImport2
 
         private void CheckConnectionButton_Click(object sender, EventArgs e)
         {
-            //FormsHelper.ShowStyledMessageBox("ee", this.CommonRepository.GetCurrentScheme().Version);
             if (CommonRepository.CheckConnection())
             {
                 FormsHelper.ShowStyledMessageBox("Проверено", "Соединение успешно!");

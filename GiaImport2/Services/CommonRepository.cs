@@ -13,6 +13,7 @@ using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Data.SqlClient;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Security.AccessControl;
@@ -435,5 +436,95 @@ namespace GiaImport2.Services
                 }
             }
         }
+        public bool TryCheckVersion(Version currentversion, bool import, bool finalinterview, out string error)
+        {
+            bool result = false;
+            error = "";
+            SqlConnection connection = null;
+            try
+            {
+                using (connection = new SqlConnection(GetConnection()))
+                {
+                    //connection.Open();
+                    if (finalinterview)
+                    {
+                        result = RtManager.CheckVersion(connection, ((int)WorkstationType.FinalInterview).ToString(), currentversion, null);
+                    }
+                    if (import)
+                    {
+                        result = RtManager.CheckVersion(connection, ((int)WorkstationType.GiaImporter).ToString(), currentversion, null);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                error = ex.ToString();
+                result = false;
+            }
+            finally
+            {
+                if (connection != null)
+                {
+                    connection.Close();
+                    connection = null;
+                }
+            }
+            return result;
+        }
+        /// <summary>
+        /// Проверка версии БД
+        /// true = хорошо, база соответствует версии, false = плохо
+        /// </summary>
+        /// <returns></returns>
+        public bool CheckDBVersion(string dbname)
+        {
+            bool result = false;
+            if (!dbname.StartsWith(Globals.DB_NAME_STARTS_WITH, true, CultureInfo.InvariantCulture))
+            {
+                return result;
+            }
+            try
+            {
+                using (var dc = SqlServerTools.CreateDataConnection(GetConnection()))
+                using (var db = new GIA_DB(dc.DataProvider, GetConnection()))
+                {
+                    var query = db.GetTable<rt_Settings>().SchemaName("dbo")
+                        .Where(rt => rt.SettingName.Equals("DbVersion"))
+                        .OrderByDescending(rtt => rtt.SettingValue);
+                    IEnumerable<Tuple<string, string>> valueComment = query.Select(r => new Tuple<string, string>(r.SettingValue, r.SettingComment));
+                    if (valueComment.Count() == 0)
+                    {
+                        result = false;
+                    }
+                    else
+                    {
+                        if (valueComment.FirstOrDefault().Item1.StartsWith(Globals.DB_VERSION_STARTS_WITH))
+                        {
+                            result = true;
+                        }
+                    }
+                    // извлекаем тип базы данных
+                    var queryType = db.GetTable<rt_Settings>().SchemaName("dbo")
+                        .Where(rt => rt.SettingName.Equals("DbType"));
+                    string typeDB = queryType.Select(x => x.SettingValue)?.FirstOrDefault()?.ToString();
+                    // проверяем на то, что база соответствует проектам ОГЭ, апробации, ИСИ. MFtcUtils.Digest.Enumerators.ProjectType
+                    if (!String.IsNullOrEmpty(typeDB) && (typeDB.Equals("DB2") || typeDB.Equals("DB6") || typeDB.Equals("IG0")))
+                    {
+                        result = true;
+                    }
+                    else
+                    {
+                        result = false;
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                string status = string.Format("При попытке получения версии БД произошла ошибка: {0}", ex.ToString());
+                GetLogger().Error(status);
+            }
+            return result;
+        }
+
     }
 }

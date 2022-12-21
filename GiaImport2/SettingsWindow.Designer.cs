@@ -29,6 +29,7 @@ namespace GiaImport2
         /// </summary>
         private void InitializeComponent()
         {
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(SettingsWindow));
             this.groupControl1 = new DevExpress.XtraEditors.GroupControl();
             this.CheckConnectionButton = new DevExpress.XtraEditors.SimpleButton();
             this.PasswordText = new DevExpress.XtraEditors.TextEdit();
@@ -213,6 +214,8 @@ namespace GiaImport2
             this.Controls.Add(this.OkButton);
             this.Controls.Add(this.groupControl2);
             this.Controls.Add(this.groupControl1);
+            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedToolWindow;
+            this.IconOptions.SvgImage = ((DevExpress.Utils.Svg.SvgImage)(resources.GetObject("SettingsWindow.IconOptions.SvgImage")));
             this.LookAndFeel.SkinName = "Office 2013 Light Gray";
             this.LookAndFeel.UseDefaultLookAndFeel = false;
             this.Name = "SettingsWindow";

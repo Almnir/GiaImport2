@@ -25,5 +25,7 @@ namespace GiaImport2.Services
         bool IsDataTableExists(string schemaName, string tableName);
         bool CheckIfStoredExist();
         void DeleteLoaderTables();
+        bool TryCheckVersion(Version currentversion, bool import, bool finalinterview, out string error);
+        bool CheckDBVersion(string dbname);
     }
 }

@@ -141,8 +141,8 @@ Global
 		{35DCE802-230D-413F-973A-E28EE21768B3}.Release (AUse Regional)|x86.Build.0 = Release|Any CPU
 		{35DCE802-230D-413F-973A-E28EE21768B3}.Release (BSE Regional)|Any CPU.ActiveCfg = Release|Any CPU
 		{35DCE802-230D-413F-973A-E28EE21768B3}.Release (BSE Regional)|Any CPU.Build.0 = Release|Any CPU
-		{35DCE802-230D-413F-973A-E28EE21768B3}.Release (BSE Regional)|x86.ActiveCfg = Release|Any CPU
-		{35DCE802-230D-413F-973A-E28EE21768B3}.Release (BSE Regional)|x86.Build.0 = Release|Any CPU
+		{35DCE802-230D-413F-973A-E28EE21768B3}.Release (BSE Regional)|x86.ActiveCfg = Release|x86
+		{35DCE802-230D-413F-973A-E28EE21768B3}.Release (BSE Regional)|x86.Build.0 = Release|x86
 		{35DCE802-230D-413F-973A-E28EE21768B3}.Release (TUSE Federal)|Any CPU.ActiveCfg = Release|Any CPU
 		{35DCE802-230D-413F-973A-E28EE21768B3}.Release (TUSE Federal)|Any CPU.Build.0 = Release|Any CPU
 		{35DCE802-230D-413F-973A-E28EE21768B3}.Release (TUSE Federal)|x86.ActiveCfg = Release|Any CPU
