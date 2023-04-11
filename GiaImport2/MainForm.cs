@@ -4,6 +4,7 @@ using DevExpress.XtraBars.Ribbon;
 using DevExpress.XtraEditors;
 using DevExpress.XtraGrid;
 using DevExpress.XtraRichEdit.Fields.Expression;
+using GiaImport2.Enumerations;
 using GiaImport2.Models;
 using GiaImport2.Services;
 using NLog.Fluent;
@@ -12,6 +13,7 @@ using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.IO;
+using System.IO.Compression;
 using System.Linq;
 using System.Reflection;
 using System.Text;
@@ -80,14 +82,14 @@ namespace GiaImport2
                     }
                 }
             }
-            if (!CommonRepository.CheckDBVersion(dataBase))
+            while (!CommonRepository.CheckDBVersion(dataBase))
             {
                 FormsHelper.ShowStyledMessageBox("Внимание!", "Версия БД не соответствует действующей!");
                 SettingsWindow settingsWindow = DIContainer.GetInstance<SettingsWindow>();
-                DialogResult resdlg = settingsWindow.ShowDialog();
-                if (resdlg != DialogResult.OK)
+                DialogResult resultdlg = settingsWindow.ShowDialog();
+                if (resultdlg != DialogResult.OK)
                 {
-                    Application.Exit();
+                    Environment.Exit(0);
                 }
             }
             string regexPattern = @"_\d+.*$";
@@ -261,7 +263,7 @@ namespace GiaImport2
             XtraOpenFileDialog openFileDialog = new XtraOpenFileDialog();
             openFileDialog.RestoreDirectory = true;
 
-            openFileDialog.Filter = "Zip Files (.zip)|*.zip|All Files (*.*)|*.*";
+            openFileDialog.Filter = "Zip Files (.zip)|*.zip";
             openFileDialog.FilterIndex = 1;
 
             openFileDialog.Multiselect = false;
@@ -270,10 +272,15 @@ namespace GiaImport2
 
             if (userClicked == DialogResult.OK)
             {
-                // проверить имена файлов
-                if (ImportXMLFilesService.CheckFilesNames(openFileDialog.FileName) == false)
+                if (Path.GetExtension(openFileDialog.FileName) != ".zip")
                 {
-                    MessageBox.Show("Имена файлов должны соответствовать названиям таблиц!");
+                    FormsHelper.ShowStyledMessageBox("Внимание!", "Выбранный файл не является zip архивом!");
+                    return;
+                }
+                // проверить имена файлов
+                if (ImportXMLFilesService.TryCheckFilesNames(openFileDialog.FileName) == false)
+                {
+                    FormsHelper.ShowStyledMessageBox("Внимание!", "Архивный файл повреждён или имена файлов не соответствуют названиям таблиц!");
                     return;
                 }
                 if (!Directory.Exists(Globals.frmSettings.TempDirectoryText == null ?
@@ -302,7 +309,6 @@ namespace GiaImport2
                 Globals.frmSettings.LastPathText = openFileDialog.FileName;
                 Globals.frmSettings.Save();
             }
-
         }
 
         private System.ComponentModel.BindingList<ImportXMLFilesDto> CreatePanelAndGetBinding()
@@ -348,35 +354,102 @@ namespace GiaImport2
             // проверяем на длину пути
             if (userClicked == DialogResult.OK)
             {
-                //try
-                //{
-                //    statusLabel.Text = openDialog.SelectedPath;
-                //}
-                //catch (PathTooLongException)
-                //{
-                //    log.Error("Слишком длинный путь!");
-                //    MessageBox.Show("Внимание!", "Слишком длинный путь!");
-                //    return;
-                //}
-                //if (string.IsNullOrEmpty(openDialog.SelectedPath))
-                //{
-                //    return;
-                //}
-                //this.metroListView1.Clear();
-                //this.metroListView1.Refresh();
-                //CancellationTokenSource source = new CancellationTokenSource();
-                //ProgressBarWindow pbw = new ProgressBarWindow(source);
-                //pbw.SetTitle("Импорт данных выполняется...");
-                //ProgressBar pbarTotal = pbw.GetProgressBarTotal();
-                //ProgressBar pbarLine = pbw.GetProgressBarLine();
+                if (string.IsNullOrEmpty(openDialog.SelectedPath))
+                {
+                    return;
+                }
+                ImportFinalInterviewService importFinalInterview = DIContainer.GetInstance<ImportFinalInterviewService>();
+                ExportInterviewPanel exportInterviewPanel = new ExportInterviewPanel();
+                exportInterviewPanel.Dock = DockStyle.Fill;
+                MainPanel.Controls.Clear();
+                MainPanel.Controls.Add(exportInterviewPanel);
+                System.ComponentModel.BindingList<FilesInfo.FilesInfoContainer> importInterviews = new System.ComponentModel.BindingList<FilesInfo.FilesInfoContainer>();
+                exportInterviewPanel.GetExportInterviewGrid().DataSource = importInterviews;
+                var cancellationToken = new CancellationTokenSource();
+                var progressBarWindow = DIContainer.GetInstance<ProgressBarWindow>();
 
-                //XMLImporter xmi = new XMLImporter(openDialog.SelectedPath, this, pbw, source);
-                //pbw.FormClosed += (a, e) => { source.Cancel(); };
-                //DisableButtons();
-                //pbw.Show();
-                //pbw.Focus();
-                //xmi.ImportAllData();
-                //EnableDisableButtons();
+                // отключаем кнопки на риббоне
+                FormsHelper.ToggleRibbonButtonsAll(ribbonControl1, false);
+
+                progressBarWindow.SetCancellationToken(cancellationToken);
+                progressBarWindow.GetProgressBarTotal().Properties.Step = 1;
+                progressBarWindow.GetProgressBarTotal().Properties.PercentView = true;
+                progressBarWindow.GetProgressBarTotal().Properties.Maximum = 100;
+                progressBarWindow.GetProgressBarTotal().Properties.Minimum = 0;
+                progressBarWindow.Show();
+
+                importFinalInterview.Init(openDialog.SelectedPath,
+                    (filedto) =>
+                    {
+                        exportInterviewPanel.GetExportInterviewGrid().Invoke((MethodInvoker)(() =>
+                        {
+                            importInterviews.Add(filedto);
+                            exportInterviewPanel.GetExportInterviewGrid().Refresh();
+                        }));
+                    },
+                    (percentage) =>
+                    {
+                        progressBarWindow.Invoke((MethodInvoker)(() =>
+                        {
+                            progressBarWindow.GetProgressBarLine().PerformStep();
+                            progressBarWindow.GetProgressBarLine().Update();
+                        }));
+                    },
+                    (percentage) =>
+                    {
+                        progressBarWindow.Invoke((MethodInvoker)(() =>
+                        {
+                            progressBarWindow.GetProgressBarTotal().PerformStep();
+                            progressBarWindow.GetProgressBarTotal().Update();
+                        }));
+                    },
+                    (fileName) =>
+                    {
+                        if (progressBarWindow != null && progressBarWindow.IsDisposed != true)
+                        {
+                            progressBarWindow.Invoke((MethodInvoker)(() =>
+                            {
+                                progressBarWindow.GetLabel().Text = fileName;
+                                progressBarWindow.GetLabel().Update();
+                            }));
+                        }
+                    },
+                    () =>
+                    {
+                        exportInterviewPanel.GetExportInterviewGrid().Invoke((MethodInvoker)(() =>
+                        {
+                            exportInterviewPanel.GetExportInterviewView().BestFitColumns();
+                        }));
+                        if (progressBarWindow != null && progressBarWindow.IsDisposed != true)
+                        {
+                            progressBarWindow.Invoke((MethodInvoker)(() =>
+                            {
+                                progressBarWindow.Close();
+                            }));
+                        }
+                        // включаем кнопки на риббоне
+                        ribbonControl1.Invoke((MethodInvoker)(() =>
+                        {
+                            FormsHelper.ToggleRibbonButtonsAll(ribbonControl1, true);
+                        }));
+                    },
+                    () =>
+                    {
+                        // включаем кнопки на риббоне
+                        ribbonControl1.Invoke((MethodInvoker)(() =>
+                        {
+                            FormsHelper.ToggleRibbonButtonsAll(ribbonControl1, true);
+                        }));
+                    },
+                    (title) =>
+                    {
+                        progressBarWindow.Invoke((MethodInvoker)(() =>
+                        {
+                            progressBarWindow.SetTitle(title);
+                        }));
+                    },
+                    cancellationToken);
+                importFinalInterview.ImportAllData();
             }
         }
 
@@ -475,7 +548,7 @@ namespace GiaImport2
                 FormsHelper.ToggleRibbonButtonsAll(ribbonControl1, false);
             }));
             BulkManager bm = DIContainer.GetInstance<BulkManager>();
-            ImportXMLFilesService.ImportFiles(this.ImportGridPanel, ribbonControl1, bm,checkedFiles,
+            ImportXMLFilesService.ImportFiles(this.ImportGridPanel, ribbonControl1, bm, checkedFiles,
                 () =>
                 {
                     if (Globals.frmSettings.PuraSurEraro)
@@ -582,17 +655,20 @@ namespace GiaImport2
                 {
                     if (Globals.frmSettings.PuraSurEraro)
                     {
-                        Invoke(new Action(() => {
+                        Invoke(new Action(() =>
+                        {
                             FormsHelper.ShowStyledMessageBox("Внимание!", "Прервано пользователем! \n Будет произведена очистка временных таблиц!");
                         }));
                         CommonRepository.DeleteLoaderTables();
-                        Invoke(new Action(() => {
+                        Invoke(new Action(() =>
+                        {
                             FormsHelper.ShowStyledMessageBox("Внимание!", "Очистка временных таблиц завершена!");
                         }));
                     }
                     else
                     {
-                        Invoke(new Action(() => {
+                        Invoke(new Action(() =>
+                        {
                             FormsHelper.ShowStyledMessageBox("Внимание!", "Прервано пользователем!");
                         }));
                     }

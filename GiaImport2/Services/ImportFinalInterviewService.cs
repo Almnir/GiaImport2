@@ -1,5 +1,4 @@
 ﻿using DevExpress.Utils.Extensions;
-using FtcLicensing.Model;
 using GiaImport2.DataModels;
 using GiaImport2.Enumerations;
 using GiaImport2.Models;
@@ -9,12 +8,10 @@ using LinqToDB.Data;
 using LinqToDB.DataProvider.SqlServer;
 using MFtcFinalInterview;
 using MFtcPck.FtcXml;
-using NLog;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
-using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -28,8 +25,7 @@ namespace GiaImport2
 {
     public partial class ImportFinalInterviewService
     {
-        private static Logger log = LogManager.GetCurrentClassLogger();
-
+        private const string Message = "Файл не является валидным B2P файлом итогового собеседования";
         private string ImpFolder;
         private string fileName;
         private int participantsLoaded;
@@ -42,11 +38,10 @@ namespace GiaImport2
         Guid SessionId;
         private int goodCounter;
 
-        private Action<ExportInterviewDto> AddFileToView;
+        private Action<FilesInfo.FilesInfoContainer> AddFileToView;
         private Action CloseProgressBar;
         private Action<int> ProgressBarLineStep;
         private Action<int> ProgressBarTotalStep;
-        private Action ProgressBarLineMakeMarque;
         private Action<string> ProgressBarSetTitle;
         private Action EnableDisableButtons;
         private Action<string> ProgressBarLabel;
@@ -62,10 +57,9 @@ namespace GiaImport2
 
 
         public void Init(string importFolder,
-            Action<ExportInterviewDto> addFileToView,
+            Action<FilesInfo.FilesInfoContainer> addFileToView,
             Action<int> progressBarLineStep,
             Action<int> progressBarTotalStep,
-            Action progressBarLineMakeMarque,
             Action<string> progressBarLabel,
             Action closeProgressBar,
             Action enableDisableButtons,
@@ -77,7 +71,6 @@ namespace GiaImport2
             this.AddFileToView = addFileToView;
             this.ProgressBarLineStep = progressBarLineStep;
             this.ProgressBarTotalStep = progressBarTotalStep;
-            this.ProgressBarLineMakeMarque = progressBarLineMakeMarque;
             this.EnableDisableButtons = enableDisableButtons;
             this.ProgressBarLabel = progressBarLabel;
             this.source = source;
@@ -124,7 +117,7 @@ namespace GiaImport2
             // закрываем сессию
             if (CommonRepository.TryCloseFinalInterviewSession(SessionId) == false)
             {
-                log.Error("Невозможно закрыть сессию!");
+                CommonRepository.GetLogger().Error("Невозможно закрыть сессию!");
             }
             if (e.Cancelled)
             {
@@ -169,12 +162,6 @@ namespace GiaImport2
                     CloseProgressBar();
                     FormsHelper.ShowStyledMessageBox("Внимание!", $"Процедура слияния завершилась некорректно!\n{ex}");
                 }
-
-                //pbarLine.Style = ProgressBarStyle.Continuous;
-                //pbarLine.MarqueeAnimationSpeed = 0;
-                // меняем стиль отображения основной полоски прогресса
-                ProgressBarLineMakeMarque();
-
                 // закрываем прогрессбар
                 CloseProgressBar();
 
@@ -210,10 +197,11 @@ namespace GiaImport2
 
                 if (ProcessFile(file, out currentFileInfo) == false)
                 {
-                    filesInfo.Add(this.fileName, FinalInterview.FileStatus.AlreadyLoaded, currentFileInfo);
+                    filesInfo.Add(this.fileName, FileStatus.ConditionReexport, currentFileInfo);
                     continue;
                 }
-                filesInfo.Add(this.fileName, FinalInterview.FileStatus.Success, currentFileInfo);
+                var fileContainer = filesInfo.Add(this.fileName, FileStatus.ConditionSavedNoErrors, currentFileInfo);
+                AddFileToView(fileContainer);
                 // обновляем статус в файле на успешный 20
                 this.finalInterview.UpdateFileConditionToSuccess();
                 Interlocked.Increment(ref goodCounter);
@@ -268,7 +256,7 @@ namespace GiaImport2
             // создаём сессию
             if (CommonRepository.TryCreateFinalInterviewSession(out Guid sessionid) == false)
             {
-                log.Error("Невозможно создать сессию!");
+                CommonRepository.GetLogger().Error("Невозможно создать сессию!");
                 FormsHelper.ShowStyledMessageBox("Ошибка!", "Невозможно создать сессию!");
                 // закрываем прогрессбар
                 CloseProgressBar();
@@ -298,7 +286,6 @@ namespace GiaImport2
 
             int i = 0;
             int total = allFiles.Count;
-            ProgressBarLineMakeMarque();
             ProgressBarLabel("Проверка выполняется...");
 
             ProgressBarTotalStep(1);
@@ -306,7 +293,7 @@ namespace GiaImport2
             foreach (var file in allFiles)
             {
                 // отображаем текущий файл
-                ProgressBarLabel(this.fileName + ".b2p");
+                ProgressBarLabel(this.fileName);
 
                 this.finalInterview = new FinalInterview();
                 // предварительная проверка файла
@@ -328,25 +315,25 @@ namespace GiaImport2
                 switch (checkStatus)
                 {
                     case FinalInterview.FileStatus.ConditionExported:
-                        filesInfo.Add(file, FinalInterview.FileStatus.ConditionExported, "Файл не был заполнен на уровне ОО! Загрузка файла невозможна!");
+                        filesInfo.Add(file, FileStatus.ConditionExported, "Файл не был заполнен на уровне ОО! Загрузка файла невозможна!");
                         break;
                     case FinalInterview.FileStatus.ConditionReexport:
-                        filesInfo.Add(file, FinalInterview.FileStatus.ConditionReexport, "Файл не был заполнен на уровне ОО! Файл экспортирован/выгружен повторно. Загрузка файла невозможна!");
+                        filesInfo.Add(file, FileStatus.ConditionReexport, "Файл не был заполнен на уровне ОО! Файл экспортирован/выгружен повторно. Загрузка файла невозможна!");
                         break;
                     case FinalInterview.FileStatus.ConditionSavedNotChecked:
-                        filesInfo.Add(file, FinalInterview.FileStatus.ConditionSavedNotChecked, "Файл сохранен без проверки на уровне ОО! Загрузка файла невозможна!");
+                        filesInfo.Add(file, FileStatus.ConditionSavedNotChecked, "Файл сохранен без проверки на уровне ОО! Загрузка файла невозможна!");
                         break;
                     case FinalInterview.FileStatus.ConditionSavedWithErrors:
-                        filesInfo.Add(file, FinalInterview.FileStatus.ConditionSavedWithErrors, "Файл сохранён с ошибками после проверки! Загрузка файла невозможна!");
+                        filesInfo.Add(file, FileStatus.ConditionSavedWithErrors, "Файл сохранён с ошибками после проверки! Загрузка файла невозможна!");
                         break;
                     case FinalInterview.FileStatus.ConditionSavedNoErrors:
-                        filesInfo.Add(file, FinalInterview.FileStatus.ConditionSavedNoErrors, "Файл сохранён после проверки (без ошибок). Готов к загрузке.");
+                        filesInfo.Add(file, FileStatus.ConditionSavedNoErrors, "Файл сохранён после проверки (без ошибок). Готов к загрузке.");
                         break;
                     case FinalInterview.FileStatus.AlreadyLoaded:
-                        filesInfo.Add(file, FinalInterview.FileStatus.Success, "Уже были загружены все бланки. Данные будут перезаписаны.");
+                        filesInfo.Add(file, FileStatus.Success, "Уже были загружены все бланки. Данные будут перезаписаны.");
                         break;
                     default:
-                        filesInfo.Add(file, FinalInterview.FileStatus.NotValidXML, "Нарушена целостность B2P-файла. Загрузка файла невозможна!");
+                        filesInfo.Add(file, FileStatus.NotValidXML, "Нарушена целостность B2P-файла. Загрузка файла невозможна!");
                         break;
                 }
                 // предварительная проверка файла
@@ -373,12 +360,12 @@ namespace GiaImport2
             Match match = Regex.Match(this.fileName, @"^(\d{8})-(\d{2})-(\d{6})-(\d{3}|\d{3}(.*))-(\d{8})$");
             if (!match.Success)
             {
-                filesInfo.Add(file, FinalInterview.FileStatus.WrongName, "Файл имеет не корректный формат имени! Загрузка файла невозможна!");
+                filesInfo.Add(file, FileStatus.WrongName, "Файл имеет не корректный формат имени! Загрузка файла невозможна!");
                 error = true;
             }
             if (!this.finalInterview.TryCheckFileNameDate(file, match.Groups[match.Groups.Count - 1].Value.ToString()))
             {
-                filesInfo.Add(file, FinalInterview.FileStatus.WrongName, "Файл имеет не корректный формат имени! Загрузка файла невозможна!");
+                filesInfo.Add(file, FileStatus.WrongName, "Файл имеет не корректный формат имени! Загрузка файла невозможна!");
                 error = true;
             }
             // проверка на десериализацию
@@ -393,7 +380,7 @@ namespace GiaImport2
             }
             if (checkSerialise == false)
             {
-                filesInfo.Add(file, FinalInterview.FileStatus.NotValidXML, "Файл не является валидным B2P файлом итогового собеседования");
+                filesInfo.Add(file, FileStatus.NotValidXML, Message);
                 error = true;
             }
             // проверка на версию
@@ -408,13 +395,13 @@ namespace GiaImport2
             }
             if (checkVersion == false)
             {
-                filesInfo.Add(file, FinalInterview.FileStatus.WrongVersion, "Файл создан несовместимой версией HandWriter. Загрузка файла невозможна!");
+                filesInfo.Add(file, FileStatus.WrongVersion, "Файл создан несовместимой версией HandWriter. Загрузка файла невозможна!");
                 error = true;
             }
 
             if (!CheckHasAnyFinished(file))
             {
-                filesInfo.Add(file, FinalInterview.FileStatus.NotFinished, "Файл не содержит ни одного явившегося участника на экзамен!");
+                filesInfo.Add(file, FileStatus.NotFinished, "Файл не содержит ни одного явившегося участника на экзамен!");
                 error = true;
             }
             return error;
@@ -433,14 +420,14 @@ namespace GiaImport2
             FinalInterviewPackage package = new FinalInterview().ParseFile(filename);
             if (package == null)
             {
-                log.Error(string.Format("Парсинг файла не прошёл для: {0}", filename));
+                CommonRepository.GetLogger().Error(string.Format("Парсинг файла не прошёл для: {0}", filename));
                 return false;
             }
             foreach (var item in package.GetParticipantDatas())
             {
                 if (item == null)
                 {
-                    log.Error(string.Format("Получение данных не прошло для: {0}", filename));
+                    CommonRepository.GetLogger().Error(string.Format("Получение данных не прошло для: {0}", filename));
                     return false;
                 }
                 // извлекаем всех кто закончил экзамен
@@ -448,7 +435,7 @@ namespace GiaImport2
                 // если null или нет таких вообще ни одного
                 if (participantDatas == null || (participantDatas != null && !participantDatas.Any()))
                 {
-                    log.Error(string.Format("Нет участников окончивших экзамен для: {0}", filename));
+                    CommonRepository.GetLogger().Error(string.Format("Нет участников окончивших экзамен для: {0}", filename));
                     return false;
                 }
                 else
@@ -490,7 +477,7 @@ namespace GiaImport2
             List<string> errors = this.finalInterview.GetErrors();
             if (errors.Count != 0)
             {
-                log.Error(errors);
+                CommonRepository.GetLogger().Error(errors);
             }
             // Дополняем ParticipantsInfo данными по участникам, которых(данных) нет в xml
             GetParticipantsInfo(ref blockpages);
@@ -504,7 +491,7 @@ namespace GiaImport2
             }
             if (alreadyImported.Item1 != 0 && alreadyImported.Item1 == alreadyImported.Item2)
             {
-                log.Error(string.Format("{0} уже загружены для файла {1}: {2}", alreadyImported.Item2, this.fileName, alreadyImported.Item3));
+                CommonRepository.GetLogger().Error(string.Format("{0} уже загружены для файла {1}: {2}", alreadyImported.Item2, this.fileName, alreadyImported.Item3));
                 currentFileInfo = string.Format("Повторная загрузка файла, данные успешно обновлены. Загружены участники: {0} ", alreadyImported.Item2);
                 //success = false;
                 //return success;
@@ -577,7 +564,7 @@ namespace GiaImport2
             catch (Exception ex)
             {
                 string status = string.Format("При выполнении запроса к базе данных произошла ошибка: {0}", ex.ToString());
-                log.Fatal(status);
+                CommonRepository.GetLogger().Fatal(status);
             }
             finally
             {
@@ -624,7 +611,7 @@ namespace GiaImport2
             catch (Exception ex)
             {
                 string status = string.Format("При выполнении запроса к базе данных произошла ошибка: {0}", ex.ToString());
-                log.Error(status);
+                CommonRepository.GetLogger().Error(status);
             }
             finally
             {
@@ -659,7 +646,7 @@ namespace GiaImport2
             catch (Exception ex)
             {
                 string status = string.Format("При выполнении запроса к базе данных произошла ошибка: {0}", ex.ToString());
-                log.Error(status);
+                CommonRepository.GetLogger().Error(status);
                 db.RollbackTransaction();
             }
             finally
@@ -788,7 +775,7 @@ namespace GiaImport2
             catch (Exception ex)
             {
                 string status = string.Format("При выполнении запроса к базе данных произошла ошибка: {0}", ex.ToString());
-                log.Fatal(status);
+                CommonRepository.GetLogger().Fatal(status);
                 db.RollbackTransaction();
             }
             finally
@@ -952,7 +939,7 @@ namespace GiaImport2
                 // если больше одной записи, это плохо, это дубль
                 if (finalMarkDIds.Count() > 1)
                 {
-                    log.Error(string.Format("Более одной записи sht_FinalMarks_D для sheetfk: {0}", participantData.SheetId));
+                    CommonRepository.GetLogger().Error(string.Format("Более одной записи sht_FinalMarks_D для sheetfk: {0}", participantData.SheetId));
                     // пофиг, берём первую попавшуюся (может быть удалять?)
                 }
                 Guid finalMarkDId = finalMarkDIds.FirstOrDefault();
@@ -1063,7 +1050,7 @@ namespace GiaImport2
             else
             if (packagesIds.Count() > 1)
             {
-                log.Error(string.Format("Более одной записи sht_Packages для FileName: {0}", this.fileName));
+                CommonRepository.GetLogger().Error(string.Format("Более одной записи sht_Packages для FileName: {0}", this.fileName));
                 // пофиг, берём первую попавшуюся (может быть удалять?)
             }
             else
@@ -1142,7 +1129,7 @@ namespace GiaImport2
             // если больше одной записи, это плохо, это дубль
             if (sheetRIds.Count() > 1)
             {
-                log.Error(string.Format("Более одной записи sht_Sheets_R для sheetid: {0}", participantData.SheetId));
+                CommonRepository.GetLogger().Error(string.Format("Более одной записи sht_Sheets_R для sheetid: {0}", participantData.SheetId));
                 // пофиг, берём первую попавшуюся (может быть удалять?)
             }
             // если лажа, то просто вставляем новое
@@ -1330,7 +1317,7 @@ namespace GiaImport2
             catch (Exception ex)
             {
                 string status = string.Format("При выполнении запроса к базе данных произошла ошибка: {0}", ex.ToString());
-                log.Fatal(status);
+                CommonRepository.GetLogger().Fatal(status);
                 db.RollbackTransaction();
             }
             finally

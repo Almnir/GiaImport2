@@ -98,7 +98,7 @@ namespace GiaImport2.Services
 
                     foreach (var item in participantsExamsQuery)
                     {
-                        FileStatus fileStatus = FileStatus.Exported;
+                        FileStatus fileStatus = FileStatus.ConditionExported;
                         Guid sheetRid = Guid.Empty;
                         Guid packageId = Guid.Empty;
                         string barcode = null, kimcode = null;

@@ -1,4 +1,5 @@
-﻿using MFtcFinalInterview;
+﻿using GiaImport2.Enumerations;
+using MFtcFinalInterview;
 using System.Collections.Concurrent;
 using System.Linq;
 
@@ -9,7 +10,7 @@ namespace GiaImport2.Models
         public class FilesInfoContainer
         {
             public string Filename { get; set; }
-            public FinalInterview.FileStatus Status { get; set; }
+            public FileStatus Status { get; set; }
             public string StatusMessage { get; set; }
         }
 
@@ -22,8 +23,9 @@ namespace GiaImport2.Models
             infoList = new ConcurrentBag<FilesInfoContainer>();
         }
 
-        public void Add(string file, FinalInterview.FileStatus status, string message)
+        public FilesInfoContainer Add(string file, FileStatus status, string message)
         {
+            FilesInfoContainer result = null;
             var found = this.infoList.Where(a => a.Filename == file);
             if (found.Count() > 0)
             {
@@ -34,7 +36,7 @@ namespace GiaImport2.Models
             else
             {
                 this.infoList.Add(
-                    new FilesInfoContainer()
+                    result = new FilesInfoContainer()
                     {
                         Filename = file,
                         Status = status,
@@ -42,6 +44,7 @@ namespace GiaImport2.Models
                     }
                 );
             }
+            return result;
         }
 
         public bool CheckForOK()

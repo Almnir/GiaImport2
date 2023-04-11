@@ -33,8 +33,8 @@ namespace GiaImport2
         public const int TASKTYPECODE_CHECK = 0;
         public const int TASKTYPECODE_FINAL = 1;
 
-        public const string DB_NAME_STARTS_WITH = "erbd_gia_reg_22_";
-        public const string DB_VERSION_STARTS_WITH = "12.";
+        public const string DB_NAME_STARTS_WITH = "erbd_gia_reg_23_";
+        public const string DB_VERSION_STARTS_WITH = "13.";
 
         public const string BARCODE_STARTS = "22320";
 

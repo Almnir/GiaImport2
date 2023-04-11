@@ -1,4 +1,4 @@
-﻿<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">x86</Platform>
@@ -62,8 +62,8 @@
     <Reference Include="Ardalis.SmartEnum, Version=1.0.8.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\Ardalis.SmartEnum.2.1.0\lib\netstandard2.0\Ardalis.SmartEnum.dll</HintPath>
     </Reference>
-    <Reference Include="Dapper, Version=2.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Dapper.2.0.123\lib\net461\Dapper.dll</HintPath>
+    <Reference Include="Dapper">
+      <HintPath>..\..\..\..\Projects\m_use\Libraries\Dapper\net461\Dapper.dll</HintPath>
     </Reference>
     <Reference Include="DevExpress.BonusSkins.v21.2, Version=21.2.4.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
@@ -124,14 +124,18 @@
       <HintPath>..\..\..\..\Projects\m_use\Libraries\DevExpress\21.2\DevExpress.XtraWizard.v21.2.dll</HintPath>
     </Reference>
     <Reference Include="linq2db">
-      <HintPath>..\..\..\..\Projects\m_use\Libraries\Linq2db\linq2db.2.6.4\net46\linq2db.dll</HintPath>
+      <HintPath>..\..\..\..\Projects\m_use\Libraries\Linq2db\linq2db.4.4.0\linq2db.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Bcl.AsyncInterfaces, Version=7.0.0.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Bcl.AsyncInterfaces.7.0.0\lib\net462\Microsoft.Bcl.AsyncInterfaces.dll</HintPath>
     </Reference>
     <Reference Include="Newtonsoft.Json, Version=13.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\..\..\Projects\m_use\Libraries\JSON\Newtonsoft.Json.dll</HintPath>
     </Reference>
     <Reference Include="NLog, Version=4.0.0.0, Culture=neutral, PublicKeyToken=5120e14c03d0593c, processorArchitecture=MSIL">
-      <HintPath>..\packages\NLog.4.7.15\lib\net45\NLog.dll</HintPath>
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\..\Projects\m_use\Libraries\NLog\NLog.4.7.12\NLog.dll</HintPath>
     </Reference>
     <Reference Include="PresentationCore" />
     <Reference Include="SimpleInjector, Version=5.0.0.0, Culture=neutral, PublicKeyToken=984cb50dea722e99, processorArchitecture=MSIL">
@@ -158,6 +162,9 @@
     <Reference Include="System.Runtime.Remoting" />
     <Reference Include="System.Runtime.Serialization" />
     <Reference Include="System.ServiceModel" />
+    <Reference Include="System.Threading.Tasks.Extensions, Version=4.2.0.1, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Threading.Tasks.Extensions.4.5.4\lib\net461\System.Threading.Tasks.Extensions.dll</HintPath>
+    </Reference>
     <Reference Include="System.Transactions" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
@@ -167,9 +174,6 @@
     <Reference Include="System.Drawing" />
     <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml" />
-    <Reference Include="TableDependency.SqlClient, Version=8.5.8.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\SqlTableDependency.8.5.8\lib\net451\TableDependency.SqlClient.dll</HintPath>
-    </Reference>
     <Reference Include="UIAutomationClient" />
     <Reference Include="WindowsBase" />
   </ItemGroup>
@@ -206,7 +210,6 @@
     <Compile Include="ExportInterviewWizard.Designer.cs">
       <DependentUpon>ExportInterviewWizard.cs</DependentUpon>
     </Compile>
-    <Compile Include="FilesInfo.cs" />
     <Compile Include="FormSettings.cs" />
     <Compile Include="FormsHelper.cs" />
     <Compile Include="GiaImportSplashScreen.cs">
@@ -238,6 +241,12 @@
     <Compile Include="Models\SchoolClasses.cs" />
     <Compile Include="Models\Schoolinfo.cs" />
     <Compile Include="Models\SheetsModel.cs" />
+    <Compile Include="Panels\ImportInterviewPanel.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Panels\ImportInterviewPanel.Designer.cs">
+      <DependentUpon>ImportInterviewPanel.cs</DependentUpon>
+    </Compile>
     <Compile Include="Panels\PreCheckControl.cs">
       <SubType>UserControl</SubType>
     </Compile>
@@ -342,6 +351,9 @@
       <DependentUpon>MainForm.cs</DependentUpon>
       <SubType>Designer</SubType>
     </EmbeddedResource>
+    <EmbeddedResource Include="Panels\ImportInterviewPanel.resx">
+      <DependentUpon>ImportInterviewPanel.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Panels\PreCheckControl.resx">
       <DependentUpon>PreCheckControl.cs</DependentUpon>
     </EmbeddedResource>
@@ -434,4 +446,7 @@
   <Target Name="AfterBuild">
   </Target>
   -->
+  <Target Name="AfterCompile">
+    <Exec Command="if &quot;$(ConfigurationName)&quot; == &quot;Release&quot; (&quot;$(ProjectDir)_ConfuserEx\Confuser.CLI.exe&quot; &quot;$(ProjectDir)_ConfuserEx\c.crproj&quot;)&#xD;&#xA;" />
+  </Target>
 </Project>

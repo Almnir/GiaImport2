@@ -189,6 +189,7 @@ namespace GiaImport2
             // 
             // OkButton
             // 
+            this.OkButton.DialogResult = System.Windows.Forms.DialogResult.OK;
             this.OkButton.Location = new System.Drawing.Point(141, 260);
             this.OkButton.Name = "OkButton";
             this.OkButton.Size = new System.Drawing.Size(75, 23);
@@ -198,6 +199,7 @@ namespace GiaImport2
             // 
             // CancelSettingsButton
             // 
+            this.CancelSettingsButton.DialogResult = System.Windows.Forms.DialogResult.Cancel;
             this.CancelSettingsButton.Location = new System.Drawing.Point(361, 260);
             this.CancelSettingsButton.Name = "CancelSettingsButton";
             this.CancelSettingsButton.Size = new System.Drawing.Size(75, 23);

@@ -1,11 +1,11 @@
 ﻿using GiaImport2.DataModels;
 using GiaImport2.Enumerations;
+using GiaImport2.Models;
 using LinqToDB;
 using LinqToDB.Data;
 using LinqToDB.DataProvider.SqlServer;
 using MFtcFinalInterview;
 using Newtonsoft.Json;
-using NLog;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;

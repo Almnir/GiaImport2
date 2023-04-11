@@ -2,6 +2,7 @@
 using DevExpress.Pdf.Native.BouncyCastle.Crypto;
 using DevExpress.XtraBars.Ribbon;
 using DevExpress.XtraEditors;
+using DevExpress.XtraRichEdit.Fields.Expression;
 using GiaImport2.DataModels;
 using GiaImport2.Models;
 using LinqToDB.Data;
@@ -56,18 +57,27 @@ namespace GiaImport2.Services
             this.CommonRepository = commonRepository;
         }
 
-        public bool CheckFilesNames(string zipFileName)
+        public bool TryCheckFilesNames(string zipFileName)
         {
             bool result = true;
-            using (var zip = ZipFile.OpenRead(zipFileName))
+            try
             {
-                foreach (var ze in zip.Entries)
+                using (var zip = ZipFile.OpenRead(zipFileName))
                 {
-                    if (!Globals.TABLES_NAMES.Contains(Path.GetFileNameWithoutExtension(ze.Name)))
+                    foreach (var ze in zip.Entries)
                     {
-                        result = false;
+                        if (!Globals.TABLES_NAMES.Contains(Path.GetFileNameWithoutExtension(ze.Name)))
+                        {
+                            result = false;
+                        }
                     }
                 }
+            }
+            catch (Exception ex)
+            {
+                result = false;
+                FormsHelper.ShowStyledMessageBox("Ошибка!", ex.ToString());
+                CommonRepository.GetLogger().Error(ex.ToString());
             }
             return result;
         }
@@ -82,40 +92,40 @@ namespace GiaImport2.Services
         }
         public bool UnpackFiles(string zipfilename, RibbonControl ribbonControl, Action<ImportXMLFilesDto> addFileToView)
         {
-            this.LoadedFiles.Clear();
             bool error = false;
-            CancellationTokenSource source = new CancellationTokenSource();
-            ProgressBarSingleBar pbw = new ProgressBarSingleBar();
-            pbw.SetCancellationToken(source);
-            pbw.SetTitle("Распаковка файлов выполняется...");
-            ProgressBarControl pbarTotal = pbw.GetProgressBarTotal();
-            pbw.Refresh();
-            LabelControl plabel = pbw.GetLabel();
-            FileInfo fi = new FileInfo(zipfilename);
-            plabel.Text = fi.Name;
-            int entriesCount = 0;
-            using (var zip = ZipFile.OpenRead(zipfilename))
-            {
-                entriesCount = zip.Entries.Count;
-            }
-            pbarTotal.Properties.Maximum = entriesCount - 1;
-            IProgress<int> progress = new Progress<int>(value =>
-            {
-                ProgressBarControl pb = pbw.GetProgressBarTotal();
-                if (!pb.IsDisposed)
-                {
-                    pb.Invoke((MethodInvoker)(() =>
-                    {
-                        pb.EditValue = value;
-                    }));
-                }
-            });
-            pbw.FormClosed += (a, e) => { source.Cancel(); };
-            // отключаем кнопки на риббоне
-            FormsHelper.ToggleRibbonButtonsAll(ribbonControl, false);
-            pbw.Show();
             try
             {
+                this.LoadedFiles.Clear();
+                CancellationTokenSource source = new CancellationTokenSource();
+                ProgressBarSingleBar pbw = new ProgressBarSingleBar();
+                pbw.SetCancellationToken(source);
+                pbw.SetTitle("Распаковка файлов выполняется...");
+                ProgressBarControl pbarTotal = pbw.GetProgressBarTotal();
+                pbw.Refresh();
+                LabelControl plabel = pbw.GetLabel();
+                FileInfo fi = new FileInfo(zipfilename);
+                plabel.Text = fi.Name;
+                int entriesCount = 0;
+                using (var zip = ZipFile.OpenRead(zipfilename))
+                {
+                    entriesCount = zip.Entries.Count;
+                }
+                pbarTotal.Properties.Maximum = entriesCount - 1;
+                IProgress<int> progress = new Progress<int>(value =>
+                {
+                    ProgressBarControl pb = pbw.GetProgressBarTotal();
+                    if (!pb.IsDisposed)
+                    {
+                        pb.Invoke((MethodInvoker)(() =>
+                        {
+                            pb.EditValue = value;
+                        }));
+                    }
+                });
+                pbw.FormClosed += (a, e) => { source.Cancel(); };
+                // отключаем кнопки на риббоне
+                FormsHelper.ToggleRibbonButtonsAll(ribbonControl, false);
+                pbw.Show();
                 Task task = Task.Run(() => RunUnpacker(addFileToView, zipfilename, progress,
                     () =>
                     {
@@ -883,7 +893,7 @@ namespace GiaImport2.Services
             return countElements;
         }
 
-        private void EndImport(Action closeProgressBar,Action<Dictionary<string, long>> showResultWindow)
+        private void EndImport(Action closeProgressBar, Action<Dictionary<string, long>> showResultWindow)
         {
             closeProgressBar();
             showResultWindow(ImportStatistics);

@@ -11,7 +11,7 @@ namespace GiaImport2.Services
 {
     public  interface IImportXMLFilesService
     {
-        bool CheckFilesNames(string zipFileName);
+        bool TryCheckFilesNames(string zipFileName);
         void ClearFiles();
         bool UnpackFiles(string zipfilename, RibbonControl ribbonControl, Action<ImportXMLFilesDto> addFileToView);
         void ValidateFiles(ImportGridPanel importGridPanel, RibbonControl ribbonControl, List<ImportXMLFilesDto> checkedFiles, Action<string> showValidationErrors, Action<(List<TableInfo> tableInfos, ConcurrentDictionary<string, string> dependencyErrors)> showResultWindow);

@@ -586,7 +586,7 @@ namespace GiaImport2.Services
                 // добить до числа на страницу
                 while (group.Count < Globals.PARTICIPANTS_IN_PAGE)
                 {
-                    group.Add(new Participantinfo(Guid.Empty, "", "", "", "", "", "", FileStatus.Exported, Guid.Empty, "", "", Guid.Empty, "", 0));
+                    group.Add(new Participantinfo(Guid.Empty, "", "", "", "", "", "", FileStatus.ConditionExported, Guid.Empty, "", "", Guid.Empty, "", 0));
                 }
                 foreach (var pinfo in group)
                 {
@@ -645,7 +645,7 @@ namespace GiaImport2.Services
                     string kimCode = null;
                     Guid sheetId = Guid.Empty;
                     // проверяем, если экспортируется в первый раз
-                    if (!pinfo.ParticipantId.Equals(Guid.Empty) && pinfo.Condition == FileStatus.Exported)
+                    if (!pinfo.ParticipantId.Equals(Guid.Empty) && pinfo.Condition == FileStatus.ConditionExported)
                     {
                         // сгенерировали баркод и кимкод
                         barCode = this.barcodeGenerator.GetNextBarcode();
